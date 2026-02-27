@@ -316,19 +316,37 @@ else:
         claimed_deck_ids = {row[0] for row in claimed_rows}
         available_decks = decks[~decks['id'].isin(claimed_deck_ids)]
 
-        # Card grid with checkboxes
+        # View mode toggle
+        view_mode = st.radio("Ansicht", ["Raster", "Liste"], horizontal=True, key="view_mode")
+
+        # Card grid/list with checkboxes
         selected_decks = []
-        cols_per_row = 3
         deck_list = list(available_decks.iterrows())
-        for i in range(0, len(deck_list), cols_per_row):
-            row_cols = st.columns(cols_per_row)
-            for j, (_, row) in enumerate(deck_list[i:i + cols_per_row]):
-                with row_cols[j]:
-                    with st.container(border=True):
+
+        if view_mode == "Raster":
+            cols_per_row = 2
+            for i in range(0, len(deck_list), cols_per_row):
+                row_cols = st.columns(cols_per_row)
+                for j, (_, row) in enumerate(deck_list[i:i + cols_per_row]):
+                    with row_cols[j]:
+                        with st.container(border=True):
+                            if pd.notna(row.get("commander_image")) and row["commander_image"]:
+                                st.image(row["commander_image"], use_container_width=True)
+                            else:
+                                st.markdown("🃏")
+                            checked = st.checkbox(f"**{row['name']}**", key=f"deck_{row['id']}")
+                            if checked:
+                                selected_decks.append(row['id'])
+        else:
+            for _, row in deck_list:
+                with st.container(border=True):
+                    col_img, col_info = st.columns([1, 5])
+                    with col_img:
                         if pd.notna(row.get("commander_image")) and row["commander_image"]:
-                            st.image(row["commander_image"], use_container_width=True)
+                            st.image(row["commander_image"], width=60)
                         else:
                             st.markdown("🃏")
+                    with col_info:
                         checked = st.checkbox(f"**{row['name']}**", key=f"deck_{row['id']}")
                         if checked:
                             selected_decks.append(row['id'])
