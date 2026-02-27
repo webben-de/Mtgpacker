@@ -21,7 +21,12 @@ def init_db():
                  (id INTEGER PRIMARY KEY, title TEXT, date DATE)''')
     # Tabelle für Stimmen/Wünsche
     c.execute('''CREATE TABLE IF NOT EXISTS votes 
-                 (event_id INTEGER, deck_id INTEGER)''')
+                 (event_id INTEGER, deck_id INTEGER, user_name TEXT)''')
+    # Migration: add user_name column to existing databases
+    try:
+        c.execute("ALTER TABLE votes ADD COLUMN user_name TEXT")
+    except sqlite3.OperationalError:
+        pass  # Column already exists
     conn.commit()
     conn.close()
 
@@ -134,12 +139,24 @@ if menu == "Verwalter-Bereich":
             ORDER BY Stimmen DESC
         '''
         results = pd.read_sql_query(query, conn)
-        conn.close()
         st.table(results)
+        st.subheader("Teilnehmer Details")
+        detail_query = '''
+            SELECT e.title as Event, d.name as Deck, v.user_name as Teilnehmer
+            FROM votes v
+            JOIN decks d ON v.deck_id = d.id
+            JOIN events e ON v.event_id = e.id
+            ORDER BY e.title, v.user_name
+        '''
+        details = pd.read_sql_query(detail_query, conn)
+        conn.close()
+        st.table(details)
 
 # --- TEILNEHMER ANSICHT ---
 else:
     st.header("Abstimmung für den nächsten Abend")
+    
+    user_name = st.text_input("Dein Name", placeholder="Vor- oder Spitzname")
     
     conn = get_db_connection()
     events = pd.read_sql_query("SELECT * FROM events ORDER BY date DESC", conn)
@@ -187,10 +204,12 @@ else:
             )
         
         if st.button("Wünsche abschicken"):
-            if 0 < len(selected_decks) <= 2:
+            if not user_name.strip():
+                st.warning("Bitte gib deinen Namen ein, damit wir Rückfragen stellen können.")
+            elif 0 < len(selected_decks) <= 2:
                 c = conn.cursor()
                 for d_id in selected_decks:
-                    c.execute("INSERT INTO votes (event_id, deck_id) VALUES (?, ?)", (selected_event_id, d_id))
+                    c.execute("INSERT INTO votes (event_id, deck_id, user_name) VALUES (?, ?, ?)", (selected_event_id, d_id, user_name.strip()))
                 conn.commit()
                 st.success("Deine Wünsche wurden gespeichert! Ich packe entsprechend.")
             else:
