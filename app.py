@@ -55,9 +55,30 @@ def fetch_scryfall_autocomplete(query):
 
 @st.cache_data(ttl=3600)
 def fetch_scryfall_card_image(card_name):
-    """Return the art_crop image URL for a card by (fuzzy) name from Scryfall."""
+    """Return the normal card image URL for a card by (fuzzy) name from Scryfall.
+    Prefers the German printing; falls back to English if unavailable."""
     if not card_name:
         return None
+    # Try German version first
+    try:
+        resp_de = requests.get(
+            "https://api.scryfall.com/cards/search",
+            params={"q": f'!"{card_name}" lang:de', "unique": "prints"},
+            headers={"User-Agent": "MtgPacker/1.0"},
+            timeout=10,
+        )
+        if resp_de.status_code == 200:
+            cards = resp_de.json().get("data", [])
+            if cards:
+                image_uris = cards[0].get("image_uris") or (
+                    cards[0].get("card_faces", [{}])[0].get("image_uris", {})
+                )
+                img = image_uris.get("normal")
+                if img:
+                    return img
+    except (requests.RequestException, ValueError):
+        pass
+    # Fallback: English version
     try:
         resp = requests.get(
             "https://api.scryfall.com/cards/named",
@@ -70,7 +91,7 @@ def fetch_scryfall_card_image(card_name):
             image_uris = data.get("image_uris") or (
                 data.get("card_faces", [{}])[0].get("image_uris", {})
             )
-            return image_uris.get("art_crop")
+            return image_uris.get("normal")
     except (requests.RequestException, ValueError):
         pass
     return None
@@ -109,7 +130,7 @@ def fetch_moxfield_deck(url):
                         image_uris = sf_data.get("image_uris") or (
                             sf_data.get("card_faces", [{}])[0].get("image_uris", {})
                         )
-                        commander_image = image_uris.get("art_crop")
+                        commander_image = image_uris.get("normal")
             return deck_name, commander_image
     except (requests.RequestException, ValueError):
         pass
@@ -201,7 +222,32 @@ if menu == "Verwalter-Bereich":
         conn = get_db_connection()
         all_decks = pd.read_sql_query("SELECT * FROM decks", conn)
         conn.close()
-        st.dataframe(all_decks, use_container_width=True)
+
+        if all_decks.empty:
+            st.info("Noch keine Decks vorhanden.")
+        else:
+            for _, deck_row in all_decks.iterrows():
+                with st.container(border=True):
+                    col_img, col_info, col_del = st.columns([1, 5, 1])
+                    with col_img:
+                        if pd.notna(deck_row.get("commander_image")) and deck_row["commander_image"]:
+                            st.image(deck_row["commander_image"], width=80)
+                        else:
+                            st.write("🃏")
+                    with col_info:
+                        st.markdown(f"**{deck_row['name']}**")
+                        if deck_row.get("url"):
+                            st.markdown(f"[Moxfield]({deck_row['url']})", unsafe_allow_html=False)
+                    with col_del:
+                        if st.button("🗑️ Löschen", key=f"del_deck_{deck_row['id']}", help="Deck löschen", type="secondary"):
+                            conn2 = get_db_connection()
+                            c2 = conn2.cursor()
+                            c2.execute("DELETE FROM decks WHERE id = ?", (deck_row['id'],))
+                            c2.execute("DELETE FROM votes WHERE deck_id = ?", (deck_row['id'],))
+                            conn2.commit()
+                            conn2.close()
+                            st.toast(f"Deck '{deck_row['name']}' wurde gelöscht.", icon="🗑️")
+                            st.rerun()
 
     with tab2:
         st.subheader("Neuen Spieleabend planen")
@@ -242,25 +288,25 @@ if menu == "Verwalter-Bereich":
 
 # --- TEILNEHMER ANSICHT ---
 else:
-    st.header("Abstimmung für den nächsten Abend")
-    
-    user_name = st.text_input("Dein Name", placeholder="Vor- oder Spitzname")
-    
+    st.header("🗳️ Abstimmung für den nächsten Abend")
+
+    user_name = st.text_input("👤 Dein Name", placeholder="Vor- oder Spitzname")
+
     conn = get_db_connection()
     events = pd.read_sql_query("SELECT * FROM events ORDER BY date DESC", conn)
-    
+
     if events.empty:
         st.info("Aktuell sind keine Events geplant.")
     else:
         event_options = {f"{row['title']} ({row['date']})": row['id'] for index, row in events.iterrows()}
-        selected_event_label = st.selectbox("Wähle das Event aus:", list(event_options.keys()))
+        selected_event_label = st.selectbox("📅 Event auswählen:", list(event_options.keys()))
         selected_event_id = event_options[selected_event_label]
-        
+
         st.divider()
-        st.write("Welche Decks soll ich mitbringen? (Wähle maximal 2)")
-        
+        st.markdown("### 🃏 Welche Decks soll ich mitbringen? *(max. 2)*")
+
         decks = pd.read_sql_query("SELECT * FROM decks", conn)
-        
+
         # Only show decks not yet claimed by another user for this event
         claimed_query = '''
             SELECT DISTINCT deck_id FROM votes
@@ -269,50 +315,44 @@ else:
         claimed_rows = conn.execute(claimed_query, (selected_event_id, user_name.strip())).fetchall()
         claimed_deck_ids = {row[0] for row in claimed_rows}
         available_decks = decks[~decks['id'].isin(claimed_deck_ids)]
-        
-        # Checkboxen für Decks
+
+        # Card grid with checkboxes
         selected_decks = []
-        backdrop_url = None
-        for index, row in available_decks.iterrows():
-            cols = st.columns([1, 4])
-            with cols[0]:
-                if pd.notna(row.get("commander_image")) and row["commander_image"]:
-                    st.image(row["commander_image"], width=80)
-            with cols[1]:
-                if st.checkbox(f"{row['name']}", key=f"deck_{row['id']}"):
-                    selected_decks.append(row['id'])
-                    # Use the first selected deck's commander art as backdrop
-                    if backdrop_url is None and pd.notna(row.get("commander_image")) and row["commander_image"]:
-                        backdrop_url = row["commander_image"]
-        
-        if backdrop_url:
-            st.markdown(
-                f"""
-                <style>
-                .stApp {{
-                    background-image: linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.65)),
-                                      url("{backdrop_url}");
-                    background-size: cover;
-                    background-attachment: fixed;
-                }}
-                </style>
-                """,
-                unsafe_allow_html=True,
-            )
-        
-        if st.button("Wünsche abschicken"):
-            if not user_name.strip():
-                st.warning("Bitte gib deinen Namen ein, damit wir Rückfragen stellen können.")
-            elif 0 < len(selected_decks) <= 2:
-                c = conn.cursor()
-                for d_id in selected_decks:
-                    c.execute("INSERT INTO votes (event_id, deck_id, user_name) VALUES (?, ?, ?)", (selected_event_id, d_id, user_name.strip()))
-                conn.commit()
-                st.success("Deine Wünsche wurden gespeichert! Ich packe entsprechend.")
-            else:
-                st.warning("Bitte wähle 1 oder 2 Decks aus.")
+        cols_per_row = 3
+        deck_list = list(available_decks.iterrows())
+        for i in range(0, len(deck_list), cols_per_row):
+            row_cols = st.columns(cols_per_row)
+            for j, (_, row) in enumerate(deck_list[i:i + cols_per_row]):
+                with row_cols[j]:
+                    with st.container(border=True):
+                        if pd.notna(row.get("commander_image")) and row["commander_image"]:
+                            st.image(row["commander_image"], use_container_width=True)
+                        else:
+                            st.markdown("🃏")
+                        checked = st.checkbox(f"**{row['name']}**", key=f"deck_{row['id']}")
+                        if checked:
+                            selected_decks.append(row['id'])
+
+        st.divider()
+        submit_col, info_col = st.columns([2, 3])
+        with submit_col:
+            if st.button("✅ Wünsche abschicken", type="primary", use_container_width=True):
+                if not user_name.strip():
+                    st.warning("Bitte gib deinen Namen ein, damit wir Rückfragen stellen können.")
+                elif 0 < len(selected_decks) <= 2:
+                    c = conn.cursor()
+                    for d_id in selected_decks:
+                        c.execute("INSERT INTO votes (event_id, deck_id, user_name) VALUES (?, ?, ?)", (selected_event_id, d_id, user_name.strip()))
+                    conn.commit()
+                    st.success("🎉 Deine Wünsche wurden gespeichert! Ich packe entsprechend.")
+                else:
+                    st.warning("Bitte wähle 1 oder 2 Decks aus.")
+        with info_col:
+            if selected_decks:
+                st.info(f"Du hast {len(selected_decks)} Deck(s) ausgewählt.")
     conn.close()
 
 # --- FOOTER ---
 st.sidebar.markdown("---")
 st.sidebar.info("💡 **Tipp:** Teile den Link zu dieser App in deiner WhatsApp/Discord Gruppe.")
+st.sidebar.caption("🔗 Powered by [Scryfall](https://scryfall.com) & [Moxfield](https://moxfield.com)")
