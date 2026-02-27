@@ -10,7 +10,12 @@ def init_db():
     c = conn.cursor()
     # Tabelle für Decks
     c.execute('''CREATE TABLE IF NOT EXISTS decks 
-                 (id INTEGER PRIMARY KEY, name TEXT, url TEXT)''')
+                 (id INTEGER PRIMARY KEY, name TEXT, url TEXT, commander_image TEXT)''')
+    # Migration: add commander_image column to existing databases
+    try:
+        c.execute("ALTER TABLE decks ADD COLUMN commander_image TEXT")
+    except sqlite3.OperationalError:
+        pass  # Column already exists
     # Tabelle für Events
     c.execute('''CREATE TABLE IF NOT EXISTS events 
                  (id INTEGER PRIMARY KEY, title TEXT, date DATE)''')
@@ -24,15 +29,44 @@ def get_db_connection():
     return sqlite3.connect('mtg_packer.db')
 
 # --- HELPER: MOXFIELD IMPORT ---
-def get_moxfield_name(url):
-    # Extrahiert den Namen aus der URL (einfache Logik)
-    # Beispiel: https://www.moxfield.com/decks/abcde-deckname
+def fetch_moxfield_deck(url):
+    """Fetch deck name and commander card art URL from Moxfield API."""
     match = re.search(r'decks/([^/]+)', url)
-    if match:
-        raw_name = match.group(1)
-        # Ersetzt Bindestriche durch Leerzeichen und macht es hübsch
-        return raw_name.replace('-', ' ').title()
-    return "Unbekanntes Deck"
+    if not match:
+        return "Unbekanntes Deck", None
+    deck_id = match.group(1)
+    try:
+        resp = requests.get(
+            f"https://api2.moxfield.com/v2/decks/all/{deck_id}",
+            headers={"User-Agent": "MtgPacker/1.0"},
+            timeout=10,
+        )
+        if resp.status_code == 200:
+            data = resp.json()
+            deck_name = data.get("name", deck_id.replace("-", " ").title())
+            commander_image = None
+            commanders = data.get("commanders", {})
+            if commanders:
+                first = next(iter(commanders.values()))
+                card = first.get("card", {})
+                scryfall_id = card.get("scryfall_id")
+                if scryfall_id:
+                    sf = requests.get(
+                        f"https://api.scryfall.com/cards/{scryfall_id}",
+                        headers={"User-Agent": "MtgPacker/1.0"},
+                        timeout=10,
+                    )
+                    if sf.status_code == 200:
+                        sf_data = sf.json()
+                        image_uris = sf_data.get("image_uris") or (
+                            sf_data.get("card_faces", [{}])[0].get("image_uris", {})
+                        )
+                        commander_image = image_uris.get("art_crop")
+            return deck_name, commander_image
+    except (requests.RequestException, ValueError):
+        pass
+    # Fallback: derive name from URL
+    return deck_id.replace("-", " ").title(), None
 
 # --- APP LAYOUT ---
 st.set_page_config(page_title="MtG Suitcase Optimizer", layout="wide")
@@ -55,13 +89,18 @@ if menu == "Verwalter-Bereich":
         mox_url = st.text_input("Moxfield Link", placeholder="https://www.moxfield.com/decks/...")
         if st.button("Deck importieren"):
             if "moxfield.com" in mox_url:
-                deck_name = get_moxfield_name(mox_url)
+                deck_name, commander_image = fetch_moxfield_deck(mox_url)
                 conn = get_db_connection()
                 c = conn.cursor()
-                c.execute("INSERT INTO decks (name, url) VALUES (?, ?)", (deck_name, mox_url))
+                c.execute(
+                    "INSERT INTO decks (name, url, commander_image) VALUES (?, ?, ?)",
+                    (deck_name, mox_url, commander_image),
+                )
                 conn.commit()
                 conn.close()
                 st.success(f"Deck '{deck_name}' wurde hinzugefügt!")
+                if commander_image:
+                    st.image(commander_image, caption=f"Commander – {deck_name}", use_container_width=True)
             else:
                 st.error("Bitte einen gültigen Moxfield-Link eingeben.")
         
@@ -119,9 +158,33 @@ else:
         
         # Checkboxen für Decks
         selected_decks = []
+        backdrop_url = None
         for index, row in decks.iterrows():
-            if st.checkbox(f"{row['name']}", key=f"deck_{row['id']}"):
-                selected_decks.append(row['id'])
+            cols = st.columns([1, 4])
+            with cols[0]:
+                if pd.notna(row.get("commander_image")) and row["commander_image"]:
+                    st.image(row["commander_image"], width=80)
+            with cols[1]:
+                if st.checkbox(f"{row['name']}", key=f"deck_{row['id']}"):
+                    selected_decks.append(row['id'])
+                    # Use the first selected deck's commander art as backdrop
+                    if backdrop_url is None and pd.notna(row.get("commander_image")) and row["commander_image"]:
+                        backdrop_url = row["commander_image"]
+        
+        if backdrop_url:
+            st.markdown(
+                f"""
+                <style>
+                .stApp {{
+                    background-image: linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.65)),
+                                      url("{backdrop_url}");
+                    background-size: cover;
+                    background-attachment: fixed;
+                }}
+                </style>
+                """,
+                unsafe_allow_html=True,
+            )
         
         if st.button("Wünsche abschicken"):
             if 0 < len(selected_decks) <= 2:
