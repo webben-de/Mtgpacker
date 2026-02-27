@@ -33,6 +33,49 @@ def init_db():
 def get_db_connection():
     return sqlite3.connect('mtg_packer.db')
 
+# --- HELPER: SCRYFALL ---
+@st.cache_data(ttl=300)
+def fetch_scryfall_autocomplete(query):
+    """Return a list of card name suggestions from Scryfall autocomplete."""
+    if not query or len(query) < 2:
+        return []
+    try:
+        resp = requests.get(
+            "https://api.scryfall.com/cards/autocomplete",
+            params={"q": query},
+            headers={"User-Agent": "MtgPacker/1.0"},
+            timeout=5,
+        )
+        if resp.status_code == 200:
+            return resp.json().get("data", [])
+    except (requests.RequestException, ValueError):
+        pass
+    return []
+
+
+@st.cache_data(ttl=3600)
+def fetch_scryfall_card_image(card_name):
+    """Return the art_crop image URL for a card by (fuzzy) name from Scryfall."""
+    if not card_name:
+        return None
+    try:
+        resp = requests.get(
+            "https://api.scryfall.com/cards/named",
+            params={"fuzzy": card_name},
+            headers={"User-Agent": "MtgPacker/1.0"},
+            timeout=10,
+        )
+        if resp.status_code == 200:
+            data = resp.json()
+            image_uris = data.get("image_uris") or (
+                data.get("card_faces", [{}])[0].get("image_uris", {})
+            )
+            return image_uris.get("art_crop")
+    except (requests.RequestException, ValueError):
+        pass
+    return None
+
+
 # --- HELPER: MOXFIELD IMPORT ---
 def fetch_moxfield_deck(url):
     """Fetch deck name and commander card art URL from Moxfield API."""
@@ -91,23 +134,68 @@ if menu == "Verwalter-Bereich":
     
     with tab1:
         st.subheader("Neues Deck hinzufügen")
-        mox_url = st.text_input("Moxfield Link", placeholder="https://www.moxfield.com/decks/...")
-        if st.button("Deck importieren"):
-            if "moxfield.com" in mox_url:
-                deck_name, commander_image = fetch_moxfield_deck(mox_url)
-                conn = get_db_connection()
-                c = conn.cursor()
-                c.execute(
-                    "INSERT INTO decks (name, url, commander_image) VALUES (?, ?, ?)",
-                    (deck_name, mox_url, commander_image),
-                )
-                conn.commit()
-                conn.close()
-                st.success(f"Deck '{deck_name}' wurde hinzugefügt!")
-                if commander_image:
-                    st.image(commander_image, caption=f"Commander – {deck_name}", use_container_width=True)
-            else:
-                st.error("Bitte einen gültigen Moxfield-Link eingeben.")
+
+        add_mode = st.radio("Importmethode", ["Moxfield-Import", "Manuell (Scryfall-Suche)"], horizontal=True)
+
+        if add_mode == "Moxfield-Import":
+            mox_url = st.text_input("Moxfield Link", placeholder="https://www.moxfield.com/decks/...")
+            if st.button("Deck importieren"):
+                from urllib.parse import urlparse
+                parsed = urlparse(mox_url)
+                if parsed.hostname and (parsed.hostname == "moxfield.com" or parsed.hostname.endswith(".moxfield.com")):
+                    deck_name, commander_image = fetch_moxfield_deck(mox_url)
+                    conn = get_db_connection()
+                    c = conn.cursor()
+                    c.execute(
+                        "INSERT INTO decks (name, url, commander_image) VALUES (?, ?, ?)",
+                        (deck_name, mox_url, commander_image),
+                    )
+                    conn.commit()
+                    conn.close()
+                    st.success(f"Deck '{deck_name}' wurde hinzugefügt!")
+                    if commander_image:
+                        st.image(commander_image, caption=f"Commander – {deck_name}", use_container_width=True)
+                else:
+                    st.error("Bitte einen gültigen Moxfield-Link eingeben.")
+        else:
+            manual_deck_name = st.text_input("Deck-Name", placeholder="z. B. Zur's Weirding Control")
+            commander_query = st.text_input(
+                "Commander suchen (Scryfall-Syntax)",
+                placeholder="z. B. Atraxa, Praetors' Voice",
+                key="commander_query",
+            )
+            suggestions = []
+            if commander_query:
+                suggestions = fetch_scryfall_autocomplete(commander_query)
+
+            selected_commander = None
+            if suggestions:
+                selected_commander = st.selectbox("Vorschläge", suggestions, key="commander_select")
+            elif commander_query:
+                st.caption("Keine Vorschläge gefunden – Name wird direkt verwendet.")
+                selected_commander = commander_query
+
+            if selected_commander:
+                preview_image = fetch_scryfall_card_image(selected_commander)
+                if preview_image:
+                    st.image(preview_image, caption=f"Commander-Vorschau: {selected_commander}", width=200)
+
+            if st.button("Deck manuell hinzufügen"):
+                if not manual_deck_name.strip():
+                    st.error("Bitte einen Deck-Namen eingeben.")
+                else:
+                    commander_image = fetch_scryfall_card_image(selected_commander) if selected_commander else None
+                    conn = get_db_connection()
+                    c = conn.cursor()
+                    c.execute(
+                        "INSERT INTO decks (name, url, commander_image) VALUES (?, ?, ?)",
+                        (manual_deck_name.strip(), "", commander_image),
+                    )
+                    conn.commit()
+                    conn.close()
+                    st.success(f"Deck '{manual_deck_name.strip()}' wurde hinzugefügt!")
+                    if commander_image:
+                        st.image(commander_image, caption=f"Commander – {selected_commander}", use_container_width=True)
         
         st.subheader("Deine Deckliste")
         conn = get_db_connection()
@@ -173,10 +261,19 @@ else:
         
         decks = pd.read_sql_query("SELECT * FROM decks", conn)
         
+        # Only show decks not yet claimed by another user for this event
+        claimed_query = '''
+            SELECT DISTINCT deck_id FROM votes
+            WHERE event_id = ? AND user_name != ?
+        '''
+        claimed_rows = conn.execute(claimed_query, (selected_event_id, user_name.strip())).fetchall()
+        claimed_deck_ids = {row[0] for row in claimed_rows}
+        available_decks = decks[~decks['id'].isin(claimed_deck_ids)]
+        
         # Checkboxen für Decks
         selected_decks = []
         backdrop_url = None
-        for index, row in decks.iterrows():
+        for index, row in available_decks.iterrows():
             cols = st.columns([1, 4])
             with cols[0]:
                 if pd.notna(row.get("commander_image")) and row["commander_image"]:
