@@ -1,0 +1,104 @@
+@import url('https://fonts.googleapis.com/css2?family=Russo+One&family=Chakra+Petch:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  *, *::before, *::after { box-sizing: border-box; }
+
+  html, body {
+    font-family: 'Chakra Petch', sans-serif;
+    background-color: #0F0F23;
+    color: #E2E8F0;
+    min-height: 100dvh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Russo One', sans-serif;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: #0F0F23; }
+  ::-webkit-scrollbar-thumb { background: #2D2B55; border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: #7C3AED; }
+
+  /* Focus rings */
+  :focus-visible {
+    outline: 2px solid #7C3AED;
+    outline-offset: 2px;
+  }
+
+  /* Respect reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center gap-2 px-5 py-2.5 bg-mtg-primary hover:bg-violet-600
+           text-white font-body font-semibold text-sm rounded-lg
+           transition-all duration-200 cursor-pointer
+           focus-visible:ring-2 focus-visible:ring-mtg-primary focus-visible:ring-offset-2 focus-visible:ring-offset-mtg-bg
+           disabled:opacity-40 disabled:cursor-not-allowed
+           shadow-glow-primary hover:shadow-glow-primary;
+  }
+
+  .btn-accent {
+    @apply inline-flex items-center gap-2 px-5 py-2.5 bg-mtg-accent hover:bg-rose-500
+           text-white font-body font-semibold text-sm rounded-lg
+           transition-all duration-200 cursor-pointer
+           focus-visible:ring-2 focus-visible:ring-mtg-accent focus-visible:ring-offset-2 focus-visible:ring-offset-mtg-bg
+           disabled:opacity-40 disabled:cursor-not-allowed;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center gap-2 px-4 py-2 text-mtg-muted hover:text-mtg-text hover:bg-mtg-card
+           font-body text-sm rounded-lg transition-all duration-200 cursor-pointer;
+  }
+
+  .card {
+    @apply bg-mtg-card border border-mtg-border rounded-xl shadow-card
+           transition-all duration-200;
+  }
+
+  .card-interactive {
+    @apply card hover:border-mtg-primary hover:shadow-glow-primary cursor-pointer;
+  }
+
+  .input {
+    @apply w-full bg-mtg-bg border border-mtg-border rounded-lg px-4 py-3
+           font-body text-sm text-mtg-text placeholder-mtg-muted
+           focus:outline-none focus:border-mtg-primary focus:ring-1 focus:ring-mtg-primary
+           transition-colors duration-200;
+  }
+
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold;
+  }
+
+  .badge-primary {
+    @apply badge bg-mtg-primary/20 text-mtg-secondary;
+  }
+
+  .section-title {
+    @apply font-display text-2xl text-mtg-gold tracking-wide;
+  }
+
+  .tab-btn {
+    @apply px-5 py-3 font-body text-sm font-medium text-mtg-muted
+           border-b-2 border-transparent
+           hover:text-mtg-text hover:border-mtg-border
+           transition-all duration-200 cursor-pointer;
+  }
+
+  .tab-btn-active {
+    @apply tab-btn text-mtg-text border-mtg-primary;
+  }
+}
