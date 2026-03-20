@@ -5,8 +5,7 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/frontend.yml'
-      - 'apps/mtgpacker/**'
-      - 'libs/**'
+      - 'web/**'
       - 'Dockerfile'
       - 'package.json'
       - 'package-lock.json'
@@ -15,7 +14,7 @@ on:
 
 env:
   NODE_VERSION: 24.x
-  APP_NAME: mtgpacker
+  APP_NAME: web
 
 jobs:
   install:
@@ -66,7 +65,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: dist-${{ env.APP_NAME }}
-          path: dist/apps/${{ env.APP_NAME }}
+          path: dist/web
 
   docker:
     name: Docker Build & Push
@@ -79,7 +78,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: dist-${{ env.APP_NAME }}
-          path: dist/apps/${{ env.APP_NAME }}
+          path: dist/web
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       - name: Build and push Docker image

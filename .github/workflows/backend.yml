@@ -5,8 +5,7 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/backend.yml'
-      - 'apps/api/**'
-      - 'libs/**'
+      - 'api/**'
       - 'backend.Dockerfile'
       - 'package.json'
       - 'package-lock.json'
@@ -66,7 +65,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: dist-${{ env.APP_NAME }}
-          path: dist/apps/${{ env.APP_NAME }}
+          path: dist/api
 
   docker:
     name: Docker Build & Push
@@ -79,7 +78,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: dist-${{ env.APP_NAME }}
-          path: dist/apps/${{ env.APP_NAME }}
+          path: dist/api
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       - name: Build and push Docker image
