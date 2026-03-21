@@ -1,6 +1,7 @@
 import cors from 'cors';
 import express, { NextFunction, Request, Response } from 'express';
 import session from 'express-session';
+import { execFile } from 'child_process';
 import passport from 'passport';
 import { Strategy as GitHubStrategy } from 'passport-github2';
 import sqlite3 from 'sqlite3';
@@ -211,6 +212,26 @@ async function fetchScryfallCardImage(cardName: string): Promise<string | null> 
   } catch { return null; }
 }
 
+/** Fetch a URL via curl to bypass Cloudflare TLS fingerprinting on Moxfield */
+function fetchViaCurl(url: string): Promise<unknown> {
+  return new Promise((resolve, reject) => {
+    execFile('curl', [
+      '-s', '--compressed',
+      '-H', 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
+      '-H', 'Accept: application/json, text/plain, */*',
+      '-H', 'Accept-Language: en-US,en;q=0.9',
+      '-H', 'Referer: https://www.moxfield.com/',
+      '-H', 'Origin: https://www.moxfield.com',
+      url,
+    ], { maxBuffer: 8 * 1024 * 1024 }, (err, stdout, stderr) => {
+      if (err) return reject(err);
+      try { resolve(JSON.parse(stdout)); }
+      catch (e) { reject(new Error(`JSON parse failed: ${stderr || stdout.slice(0, 200)}`)); }
+    });
+  });
+}
+
+
 interface MoxfieldResult {
   deckName: string;
   commanderImage: string | null;
@@ -231,12 +252,7 @@ async function fetchMoxfieldDeck(url: string): Promise<MoxfieldResult> {
   const deckId = match[1];
 
   try {
-    const r = await fetch(`https://api2.moxfield.com/v2/decks/all/${deckId}`, {
-      headers: { 'User-Agent': 'MtgPacker/1.0', 'Accept': 'application/json' },
-    });
-    if (!r.ok) return fallback(deckId);
-
-    const data = await r.json();
+    const data: any = await fetchViaCurl(`https://api2.moxfield.com/v2/decks/all/${deckId}`);
 
     // Deck name — try multiple fields
     const deckName: string =

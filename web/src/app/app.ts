@@ -244,7 +244,7 @@ export class App implements OnInit {
   importDeckFromMoxfield() {
     if (!this.moxUrl.includes('moxfield.com')) return;
     this.clearMessages();
-    this.http.post<Deck>(`${this.apiUrl}/decks/import-moxfield`, { url: this.moxUrl }).subscribe({
+    this.http.post<Deck>(`${this.apiUrl}/decks/import-moxfield`, { url: this.moxUrl }, { withCredentials: true }).subscribe({
       next: (deck) => {
         this.showInfo(`"${deck.name}" erfolgreich importiert.`);
         this.moxUrl = '';
