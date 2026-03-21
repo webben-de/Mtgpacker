@@ -22,26 +22,27 @@ function runSql(
 ): Promise<{ lastID: number; changes: number }> {
   return new Promise((resolve, reject) => {
     db.run(sql, params, function onResult(err) {
-      if (err) { reject(err); return; }
+      if (err) {
+        reject(err);
+        return;
+      }
       resolve({ lastID: this.lastID, changes: this.changes });
     });
   });
 }
 
-function allSql<T>(db: sqlite3.Database, sql: string, params: unknown[] = []): Promise<T[]> {
+function allSql<T>(
+  db: sqlite3.Database,
+  sql: string,
+  params: unknown[] = [],
+): Promise<T[]> {
   return new Promise((resolve, reject) => {
     db.all(sql, params, (err, rows: T[]) => {
-      if (err) { reject(err); return; }
+      if (err) {
+        reject(err);
+        return;
+      }
       resolve(rows);
-    });
-  });
-}
-
-function getSql<T>(db: sqlite3.Database, sql: string, params: unknown[] = []): Promise<T | undefined> {
-  return new Promise((resolve, reject) => {
-    db.get(sql, params, (err, row: T) => {
-      if (err) { reject(err); return; }
-      resolve(row);
     });
   });
 }
@@ -49,27 +50,38 @@ function getSql<T>(db: sqlite3.Database, sql: string, params: unknown[] = []): P
 async function initDb(): Promise<void> {
   const db = getDbConnection();
   try {
-    await runSql(db, `CREATE TABLE IF NOT EXISTS decks (
+    await runSql(
+      db,
+      `CREATE TABLE IF NOT EXISTS decks (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL,
       url TEXT DEFAULT '',
       commander_image TEXT
-    )`);
+    )`,
+    );
 
-    await runSql(db, `CREATE TABLE IF NOT EXISTS events (
+    await runSql(
+      db,
+      `CREATE TABLE IF NOT EXISTS events (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       title TEXT NOT NULL,
       date DATE NOT NULL
-    )`);
+    )`,
+    );
 
-    await runSql(db, `CREATE TABLE IF NOT EXISTS votes (
+    await runSql(
+      db,
+      `CREATE TABLE IF NOT EXISTS votes (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       event_id INTEGER NOT NULL,
       deck_id INTEGER NOT NULL,
       user_name TEXT NOT NULL
-    )`);
+    )`,
+    );
 
-    await runSql(db, `CREATE TABLE IF NOT EXISTS orders (
+    await runSql(
+      db,
+      `CREATE TABLE IF NOT EXISTS orders (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       user_name TEXT NOT NULL,
       github_login TEXT,
@@ -81,7 +93,8 @@ async function initDb(): Promise<void> {
       notes TEXT DEFAULT '',
       status TEXT NOT NULL DEFAULT 'offen',
       created_at TEXT NOT NULL DEFAULT (datetime('now'))
-    )`);
+    )`,
+    );
 
     // Migrations: add columns if missing
     for (const [table, col, def] of [
@@ -89,7 +102,11 @@ async function initDb(): Promise<void> {
       ['votes', 'user_name', 'TEXT'],
       ['orders', 'github_avatar', "TEXT DEFAULT ''"],
     ] as [string, string, string][]) {
-      try { await runSql(db, `ALTER TABLE ${table} ADD COLUMN ${col} ${def}`); } catch { /* exists */ }
+      try {
+        await runSql(db, `ALTER TABLE ${table} ADD COLUMN ${col} ${def}`);
+      } catch {
+        /* exists */
+      }
     }
   } finally {
     db.close();
@@ -117,6 +134,13 @@ interface GitHubUser {
   isAdmin: boolean;
 }
 
+interface GitHubProfile {
+  id: string;
+  username?: string;
+  displayName?: string;
+  photos?: Array<{ value?: string }>;
+}
+
 declare module 'express-session' {
   interface SessionData {
     user?: GitHubUser;
@@ -132,7 +156,12 @@ if (oauthEnabled) {
         callbackURL: `${BASE_URL}/api/auth/github/callback`,
         scope: ['read:user'],
       },
-      (_accessToken: string, _refreshToken: string, profile: any, done: Function) => {
+      (
+        _accessToken: string,
+        _refreshToken: string,
+        profile: GitHubProfile,
+        done: (error: Error | null, user?: GitHubUser) => void,
+      ) => {
         const user: GitHubUser = {
           id: profile.id,
           login: profile.username ?? '',
@@ -144,8 +173,8 @@ if (oauthEnabled) {
       },
     ),
   );
-  passport.serializeUser((user: any, done) => done(null, user));
-  passport.deserializeUser((obj: any, done) => done(null, obj));
+  passport.serializeUser((user: GitHubUser, done) => done(null, user));
+  passport.deserializeUser((obj: GitHubUser, done) => done(null, obj));
 }
 
 // ── Express setup ─────────────────────────────────────────────────────────────
@@ -170,7 +199,10 @@ if (oauthEnabled) {
 
 function isAdmin(req: Request, res: Response, next: NextFunction) {
   const user = req.session?.user;
-  if (!oauthEnabled || (user && user.isAdmin)) { next(); return; }
+  if (!oauthEnabled || (user && user.isAdmin)) {
+    next();
+    return;
+  }
   res.status(403).send({ error: 'Admin access required' });
 }
 
@@ -179,12 +211,26 @@ function isAdmin(req: Request, res: Response, next: NextFunction) {
 function isValidMoxfieldUrl(url: string): boolean {
   try {
     const p = new URL(url);
-    return p.hostname === 'moxfield.com' || p.hostname.endsWith('.moxfield.com');
-  } catch { return false; }
+    return (
+      p.hostname === 'moxfield.com' || p.hostname.endsWith('.moxfield.com')
+    );
+  } catch {
+    return false;
+  }
 }
 
-function extractImageUrl(cardData: any): string | null {
-  const uris = cardData?.image_uris ?? cardData?.card_faces?.[0]?.image_uris;
+interface ScryfallImageUris {
+  normal?: string;
+}
+
+interface ScryfallCardLike {
+  image_uris?: ScryfallImageUris;
+  card_faces?: Array<{ image_uris?: ScryfallImageUris }>;
+}
+
+function extractImageUrl(cardData: unknown): string | null {
+  const data = cardData as ScryfallCardLike;
+  const uris = data.image_uris ?? data.card_faces?.[0]?.image_uris;
   return uris?.normal ?? null;
 }
 
@@ -192,45 +238,88 @@ async function fetchScryfallAutocomplete(query: string): Promise<string[]> {
   if (!query || query.length < 2) return [];
   try {
     const r = await fetch(
-      'https://api.scryfall.com/cards/autocomplete?' + new URLSearchParams({ q: query }),
+      'https://api.scryfall.com/cards/autocomplete?' +
+        new URLSearchParams({ q: query }),
       { headers: { 'User-Agent': 'MtgPacker/1.0' } },
     );
     if (!r.ok) return [];
     return (await r.json()).data ?? [];
-  } catch { return []; }
+  } catch {
+    return [];
+  }
 }
 
-async function fetchScryfallCardImage(cardName: string): Promise<string | null> {
+async function fetchScryfallCardImage(
+  cardName: string,
+): Promise<string | null> {
   if (!cardName) return null;
   try {
     const r = await fetch(
-      'https://api.scryfall.com/cards/named?' + new URLSearchParams({ fuzzy: cardName }),
+      'https://api.scryfall.com/cards/named?' +
+        new URLSearchParams({ fuzzy: cardName }),
       { headers: { 'User-Agent': 'MtgPacker/1.0' } },
     );
     if (!r.ok) return null;
     return extractImageUrl(await r.json());
-  } catch { return null; }
+  } catch {
+    return null;
+  }
 }
 
 /** Fetch a URL via curl to bypass Cloudflare TLS fingerprinting on Moxfield */
 function fetchViaCurl(url: string): Promise<unknown> {
   return new Promise((resolve, reject) => {
-    execFile('curl', [
-      '-s', '--compressed',
-      '-H', 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
-      '-H', 'Accept: application/json, text/plain, */*',
-      '-H', 'Accept-Language: en-US,en;q=0.9',
-      '-H', 'Referer: https://www.moxfield.com/',
-      '-H', 'Origin: https://www.moxfield.com',
-      url,
-    ], { maxBuffer: 8 * 1024 * 1024 }, (err, stdout, stderr) => {
-      if (err) return reject(err);
-      try { resolve(JSON.parse(stdout)); }
-      catch (e) { reject(new Error(`JSON parse failed: ${stderr || stdout.slice(0, 200)}`)); }
-    });
+    execFile(
+      'curl',
+      [
+        '-s',
+        '--compressed',
+        '-H',
+        'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
+        '-H',
+        'Accept: application/json, text/plain, */*',
+        '-H',
+        'Accept-Language: en-US,en;q=0.9',
+        '-H',
+        'Referer: https://www.moxfield.com/',
+        '-H',
+        'Origin: https://www.moxfield.com',
+        url,
+      ],
+      { maxBuffer: 8 * 1024 * 1024 },
+      (err, stdout, stderr) => {
+        if (err) return reject(err);
+        try {
+          resolve(JSON.parse(stdout));
+        } catch {
+          reject(
+            new Error(`JSON parse failed: ${stderr || stdout.slice(0, 200)}`),
+          );
+        }
+      },
+    );
   });
 }
 
+interface MoxfieldCard {
+  name?: string;
+  set?: string;
+  scryfall_id?: string;
+}
+
+interface MoxfieldCardEntry {
+  card?: MoxfieldCard;
+  quantity?: number;
+}
+
+interface MoxfieldDeckData {
+  name?: string;
+  deckTitleDisplay?: string;
+  publicUrl?: string;
+  commanders?: Record<string, MoxfieldCardEntry>;
+  mainboard?: Record<string, MoxfieldCardEntry>;
+  sideboard?: Record<string, MoxfieldCardEntry>;
+}
 
 interface MoxfieldResult {
   deckName: string;
@@ -252,17 +341,21 @@ async function fetchMoxfieldDeck(url: string): Promise<MoxfieldResult> {
   const deckId = match[1];
 
   try {
-    const data: any = await fetchViaCurl(`https://api2.moxfield.com/v2/decks/all/${deckId}`);
+    const data = (await fetchViaCurl(
+      `https://api2.moxfield.com/v2/decks/all/${deckId}`,
+    )) as MoxfieldDeckData;
 
     // Deck name — try multiple fields
     const deckName: string =
       data.name ||
       data.deckTitleDisplay ||
       data.publicUrl?.split('/').pop()?.replace(/-/g, ' ') ||
-      deckId.replace(/-/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase());
+      deckId
+        .replace(/-/g, ' ')
+        .replace(/\b\w/g, (c: string) => c.toUpperCase());
 
     // Card list (mainboard + commanders + sideboard)
-    const sections: Array<{ [cardId: string]: { card: any; quantity: number } }> = [
+    const sections: Array<Record<string, MoxfieldCardEntry>> = [
       data.commanders ?? {},
       data.mainboard ?? {},
       data.sideboard ?? {},
@@ -271,9 +364,9 @@ async function fetchMoxfieldDeck(url: string): Promise<MoxfieldResult> {
     let cardCount = 0;
     for (const section of sections) {
       for (const entry of Object.values(section)) {
-        const qty: number = (entry as any).quantity ?? 1;
-        const name: string = (entry as any).card?.name ?? 'Unknown';
-        const set: string = (entry as any).card?.set ?? '';
+        const qty = entry.quantity ?? 1;
+        const name = entry.card?.name ?? 'Unknown';
+        const set = entry.card?.set ?? '';
         cardList.push({ name, quantity: qty, set });
         cardCount += qty;
       }
@@ -283,17 +376,22 @@ async function fetchMoxfieldDeck(url: string): Promise<MoxfieldResult> {
     let commanderImage: string | null = null;
 
     const commanders = data.commanders ?? {};
-    const firstCommander = Object.values(commanders)[0] as any;
+    const firstCommander = Object.values(commanders)[0];
     const commanderCard = firstCommander?.card;
 
     // 1. Try Scryfall ID from Moxfield
     if (commanderCard?.scryfall_id) {
       try {
-        const sr = await fetch(`https://api.scryfall.com/cards/${commanderCard.scryfall_id}`, {
-          headers: { 'User-Agent': 'MtgPacker/1.0' },
-        });
+        const sr = await fetch(
+          `https://api.scryfall.com/cards/${commanderCard.scryfall_id}`,
+          {
+            headers: { 'User-Agent': 'MtgPacker/1.0' },
+          },
+        );
         if (sr.ok) commanderImage = extractImageUrl(await sr.json());
-      } catch { /* fall through */ }
+      } catch {
+        /* fall through */
+      }
     }
 
     // 2. Try commander name search
@@ -364,60 +462,110 @@ app.get('/api/decks', async (_req: Request, res: Response) => {
   try {
     res.send(await allSql(db, 'SELECT * FROM decks ORDER BY id DESC'));
   } catch (err) {
-    res.status(500).send({ error: 'Could not fetch decks', details: String(err) });
-  } finally { db.close(); }
+    res
+      .status(500)
+      .send({ error: 'Could not fetch decks', details: String(err) });
+  } finally {
+    db.close();
+  }
 });
 
 app.post('/api/decks', async (req: Request, res: Response) => {
   const { name, commander_name, commander_image } = req.body ?? {};
-  if (!name?.trim()) { res.status(400).send({ error: 'Deck name is required' }); return; }
-  const image = commander_image || (commander_name ? await fetchScryfallCardImage(commander_name) : null);
+  if (!name?.trim()) {
+    res.status(400).send({ error: 'Deck name is required' });
+    return;
+  }
+  const image =
+    commander_image ||
+    (commander_name ? await fetchScryfallCardImage(commander_name) : null);
   const db = getDbConnection();
   try {
-    const result = await runSql(db, 'INSERT INTO decks (name, url, commander_image) VALUES (?, ?, ?)', [name.trim(), '', image]);
-    res.status(201).send({ id: result.lastID, name: name.trim(), url: '', commander_image: image });
+    const result = await runSql(
+      db,
+      'INSERT INTO decks (name, url, commander_image) VALUES (?, ?, ?)',
+      [name.trim(), '', image],
+    );
+    res.status(201).send({
+      id: result.lastID,
+      name: name.trim(),
+      url: '',
+      commander_image: image,
+    });
   } catch (err) {
-    res.status(500).send({ error: 'Could not create deck', details: String(err) });
-  } finally { db.close(); }
+    res
+      .status(500)
+      .send({ error: 'Could not create deck', details: String(err) });
+  } finally {
+    db.close();
+  }
 });
 
 // Preview a Moxfield deck without saving (used by order form too)
 app.post('/api/decks/preview-moxfield', async (req: Request, res: Response) => {
   const { url } = req.body ?? {};
-  if (!url || !isValidMoxfieldUrl(url)) { res.status(400).send({ error: 'Invalid Moxfield URL' }); return; }
+  if (!url || !isValidMoxfieldUrl(url)) {
+    res.status(400).send({ error: 'Invalid Moxfield URL' });
+    return;
+  }
   try {
     const result = await fetchMoxfieldDeck(url);
     res.send(result);
   } catch (err) {
-    res.status(500).send({ error: 'Could not fetch deck', details: String(err) });
+    res
+      .status(500)
+      .send({ error: 'Could not fetch deck', details: String(err) });
   }
 });
 
 app.post('/api/decks/import-moxfield', async (req: Request, res: Response) => {
   const { url } = req.body ?? {};
-  if (!url || !isValidMoxfieldUrl(url)) { res.status(400).send({ error: 'Invalid Moxfield URL' }); return; }
+  if (!url || !isValidMoxfieldUrl(url)) {
+    res.status(400).send({ error: 'Invalid Moxfield URL' });
+    return;
+  }
   try {
     const { deckName, commanderImage } = await fetchMoxfieldDeck(url);
     const db = getDbConnection();
     try {
-      const result = await runSql(db, 'INSERT INTO decks (name, url, commander_image) VALUES (?, ?, ?)', [deckName, url, commanderImage]);
-      res.status(201).send({ id: result.lastID, name: deckName, url, commander_image: commanderImage });
-    } finally { db.close(); }
+      const result = await runSql(
+        db,
+        'INSERT INTO decks (name, url, commander_image) VALUES (?, ?, ?)',
+        [deckName, url, commanderImage],
+      );
+      res.status(201).send({
+        id: result.lastID,
+        name: deckName,
+        url,
+        commander_image: commanderImage,
+      });
+    } finally {
+      db.close();
+    }
   } catch (err) {
-    res.status(500).send({ error: 'Could not import deck', details: String(err) });
+    res
+      .status(500)
+      .send({ error: 'Could not import deck', details: String(err) });
   }
 });
 
 app.delete('/api/decks/:id', isAdmin, async (req: Request, res: Response) => {
   const id = Number(req.params.id);
-  if (!Number.isFinite(id)) { res.status(400).send({ error: 'Invalid deck id' }); return; }
+  if (!Number.isFinite(id)) {
+    res.status(400).send({ error: 'Invalid deck id' });
+    return;
+  }
   const db = getDbConnection();
   try {
     await runSql(db, 'DELETE FROM decks WHERE id = ?', [id]);
     res.send({ ok: true });
   } catch (err) {
-    res.status(500).send({ error: 'Could not delete deck', details: String(err) });
-  } finally { db.close(); }
+    res
+      .status(500)
+      .send({ error: 'Could not delete deck', details: String(err) });
+  } finally {
+    db.close();
+  }
 });
 
 // ── Routes: Events ────────────────────────────────────────────────────────────
@@ -427,60 +575,108 @@ app.get('/api/events', async (_req: Request, res: Response) => {
   try {
     res.send(await allSql(db, 'SELECT * FROM events ORDER BY date DESC'));
   } catch (err) {
-    res.status(500).send({ error: 'Could not fetch events', details: String(err) });
-  } finally { db.close(); }
+    res
+      .status(500)
+      .send({ error: 'Could not fetch events', details: String(err) });
+  } finally {
+    db.close();
+  }
 });
 
 app.post('/api/events', isAdmin, async (req: Request, res: Response) => {
   const { title, date } = req.body ?? {};
-  if (!title?.trim() || !date) { res.status(400).send({ error: 'title and date required' }); return; }
-  const db = getDbConnection();
-  try {
-    const result = await runSql(db, 'INSERT INTO events (title, date) VALUES (?, ?)', [title.trim(), date]);
-    res.status(201).send({ id: result.lastID, title: title.trim(), date });
-  } catch (err) {
-    res.status(500).send({ error: 'Could not create event', details: String(err) });
-  } finally { db.close(); }
-});
-
-app.get('/api/events/:eventId/available-decks', async (req: Request, res: Response) => {
-  const eventId = Number(req.params.eventId);
-  const userName = String(req.query['userName'] ?? '').trim();
-  if (!Number.isFinite(eventId) || !userName) {
-    res.status(400).send({ error: 'eventId and userName required' });
+  if (!title?.trim() || !date) {
+    res.status(400).send({ error: 'title and date required' });
     return;
   }
   const db = getDbConnection();
   try {
-    const voted = await allSql<{ deck_id: number }>(
-      db, 'SELECT deck_id FROM votes WHERE event_id = ? AND user_name != ?', [eventId, userName],
+    const result = await runSql(
+      db,
+      'INSERT INTO events (title, date) VALUES (?, ?)',
+      [title.trim(), date],
     );
-    const takenIds = voted.map((v) => v.deck_id);
-    const decks = await allSql<{ id: number }>(db, 'SELECT * FROM decks ORDER BY id DESC');
-    res.send(decks.filter((d) => !takenIds.includes(d.id)));
+    res.status(201).send({ id: result.lastID, title: title.trim(), date });
   } catch (err) {
-    res.status(500).send({ error: 'Could not fetch available decks', details: String(err) });
-  } finally { db.close(); }
+    res
+      .status(500)
+      .send({ error: 'Could not create event', details: String(err) });
+  } finally {
+    db.close();
+  }
 });
+
+app.get(
+  '/api/events/:eventId/available-decks',
+  async (req: Request, res: Response) => {
+    const eventId = Number(req.params.eventId);
+    const userName = String(req.query['userName'] ?? '').trim();
+    if (!Number.isFinite(eventId) || !userName) {
+      res.status(400).send({ error: 'eventId and userName required' });
+      return;
+    }
+    const db = getDbConnection();
+    try {
+      const voted = await allSql<{ deck_id: number }>(
+        db,
+        'SELECT deck_id FROM votes WHERE event_id = ? AND user_name != ?',
+        [eventId, userName],
+      );
+      const takenIds = voted.map((v) => v.deck_id);
+      const decks = await allSql<{ id: number }>(
+        db,
+        'SELECT * FROM decks ORDER BY id DESC',
+      );
+      res.send(decks.filter((d) => !takenIds.includes(d.id)));
+    } catch (err) {
+      res.status(500).send({
+        error: 'Could not fetch available decks',
+        details: String(err),
+      });
+    } finally {
+      db.close();
+    }
+  },
+);
 
 // ── Routes: Votes ─────────────────────────────────────────────────────────────
 
 app.post('/api/votes', async (req: Request, res: Response) => {
   const { eventId, userName, deckIds } = req.body ?? {};
-  if (!eventId || !userName || !Array.isArray(deckIds) || deckIds.length === 0) {
-    res.status(400).send({ error: 'eventId, userName, deckIds required' }); return;
+  if (
+    !eventId ||
+    !userName ||
+    !Array.isArray(deckIds) ||
+    deckIds.length === 0
+  ) {
+    res.status(400).send({ error: 'eventId, userName, deckIds required' });
+    return;
   }
-  if (deckIds.length > 2) { res.status(400).send({ error: 'Max 2 decks per vote' }); return; }
+  if (deckIds.length > 2) {
+    res.status(400).send({ error: 'Max 2 decks per vote' });
+    return;
+  }
   const db = getDbConnection();
   try {
-    await runSql(db, 'DELETE FROM votes WHERE event_id = ? AND user_name = ?', [eventId, userName]);
+    await runSql(db, 'DELETE FROM votes WHERE event_id = ? AND user_name = ?', [
+      eventId,
+      userName,
+    ]);
     for (const deckId of deckIds) {
-      await runSql(db, 'INSERT INTO votes (event_id, deck_id, user_name) VALUES (?, ?, ?)', [eventId, deckId, userName]);
+      await runSql(
+        db,
+        'INSERT INTO votes (event_id, deck_id, user_name) VALUES (?, ?, ?)',
+        [eventId, deckId, userName],
+      );
     }
     res.status(201).send({ ok: true });
   } catch (err) {
-    res.status(500).send({ error: 'Could not save votes', details: String(err) });
-  } finally { db.close(); }
+    res
+      .status(500)
+      .send({ error: 'Could not save votes', details: String(err) });
+  } finally {
+    db.close();
+  }
 });
 
 // ── Routes: Results ───────────────────────────────────────────────────────────
@@ -488,32 +684,46 @@ app.post('/api/votes', async (req: Request, res: Response) => {
 app.get('/api/results/summary', async (_req: Request, res: Response) => {
   const db = getDbConnection();
   try {
-    res.send(await allSql(db,
-      `SELECT e.title, d.name, COUNT(*) as stimmen
+    res.send(
+      await allSql(
+        db,
+        `SELECT e.title, d.name, COUNT(*) as stimmen
        FROM votes v
        JOIN decks d ON v.deck_id = d.id
        JOIN events e ON v.event_id = e.id
        GROUP BY v.event_id, v.deck_id
        ORDER BY stimmen DESC`,
-    ));
+      ),
+    );
   } catch (err) {
-    res.status(500).send({ error: 'Could not fetch summary', details: String(err) });
-  } finally { db.close(); }
+    res
+      .status(500)
+      .send({ error: 'Could not fetch summary', details: String(err) });
+  } finally {
+    db.close();
+  }
 });
 
 app.get('/api/results/details', async (_req: Request, res: Response) => {
   const db = getDbConnection();
   try {
-    res.send(await allSql(db,
-      `SELECT e.title as event, d.name as deck, v.user_name as teilnehmer
+    res.send(
+      await allSql(
+        db,
+        `SELECT e.title as event, d.name as deck, v.user_name as teilnehmer
        FROM votes v
        JOIN decks d ON v.deck_id = d.id
        JOIN events e ON v.event_id = e.id
        ORDER BY e.date DESC, d.name`,
-    ));
+      ),
+    );
   } catch (err) {
-    res.status(500).send({ error: 'Could not fetch details', details: String(err) });
-  } finally { db.close(); }
+    res
+      .status(500)
+      .send({ error: 'Could not fetch details', details: String(err) });
+  } finally {
+    db.close();
+  }
 });
 
 // ── Routes: Orders ────────────────────────────────────────────────────────────
@@ -521,13 +731,20 @@ app.get('/api/results/details', async (_req: Request, res: Response) => {
 app.post('/api/orders', async (req: Request, res: Response) => {
   const { moxfieldUrl, notes } = req.body ?? {};
   const sessionUser = req.session?.user;
-  const userName: string = sessionUser?.displayName || sessionUser?.login || (req.body.userName ?? '').trim();
+  const userName: string =
+    sessionUser?.displayName ||
+    sessionUser?.login ||
+    (req.body.userName ?? '').trim();
 
   if (!moxfieldUrl || !isValidMoxfieldUrl(moxfieldUrl)) {
-    res.status(400).send({ error: 'Valid Moxfield URL required' }); return;
+    res.status(400).send({ error: 'Valid Moxfield URL required' });
+    return;
   }
   if (!userName) {
-    res.status(400).send({ error: 'User name required (log in or provide userName)' }); return;
+    res
+      .status(400)
+      .send({ error: 'User name required (log in or provide userName)' });
+    return;
   }
 
   try {
@@ -536,7 +753,8 @@ app.post('/api/orders', async (req: Request, res: Response) => {
 
     const db = getDbConnection();
     try {
-      const result = await runSql(db,
+      const result = await runSql(
+        db,
         `INSERT INTO orders (user_name, github_login, github_avatar, moxfield_url, deck_name, card_count, total_price, notes)
          VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
         [
@@ -551,12 +769,21 @@ app.post('/api/orders', async (req: Request, res: Response) => {
         ],
       );
       res.status(201).send({
-        id: result.lastID, userName, deckName, cardCount, totalPrice,
-        pricePerCard: PRICE_PER_CARD, status: 'offen',
+        id: result.lastID,
+        userName,
+        deckName,
+        cardCount,
+        totalPrice,
+        pricePerCard: PRICE_PER_CARD,
+        status: 'offen',
       });
-    } finally { db.close(); }
+    } finally {
+      db.close();
+    }
   } catch (err) {
-    res.status(500).send({ error: 'Could not create order', details: String(err) });
+    res
+      .status(500)
+      .send({ error: 'Could not create order', details: String(err) });
   }
 });
 
@@ -565,8 +792,12 @@ app.get('/api/orders', async (_req: Request, res: Response) => {
   try {
     res.send(await allSql(db, 'SELECT * FROM orders ORDER BY created_at DESC'));
   } catch (err) {
-    res.status(500).send({ error: 'Could not fetch orders', details: String(err) });
-  } finally { db.close(); }
+    res
+      .status(500)
+      .send({ error: 'Could not fetch orders', details: String(err) });
+  } finally {
+    db.close();
+  }
 });
 
 app.patch('/api/orders/:id', isAdmin, async (req: Request, res: Response) => {
@@ -574,15 +805,20 @@ app.patch('/api/orders/:id', isAdmin, async (req: Request, res: Response) => {
   const { status } = req.body ?? {};
   const allowed = ['offen', 'in Bearbeitung', 'abgeschlossen', 'storniert'];
   if (!Number.isFinite(id) || !allowed.includes(status)) {
-    res.status(400).send({ error: 'Invalid id or status' }); return;
+    res.status(400).send({ error: 'Invalid id or status' });
+    return;
   }
   const db = getDbConnection();
   try {
     await runSql(db, 'UPDATE orders SET status = ? WHERE id = ?', [status, id]);
     res.send({ ok: true });
   } catch (err) {
-    res.status(500).send({ error: 'Could not update order', details: String(err) });
-  } finally { db.close(); }
+    res
+      .status(500)
+      .send({ error: 'Could not update order', details: String(err) });
+  } finally {
+    db.close();
+  }
 });
 
 // ── Routes: Scryfall ──────────────────────────────────────────────────────────
@@ -594,9 +830,15 @@ app.get('/api/scryfall/autocomplete', async (req: Request, res: Response) => {
 
 app.get('/api/scryfall/card-image', async (req: Request, res: Response) => {
   const name = String(req.query['name'] ?? '');
-  if (!name) { res.status(400).send({ error: 'name required' }); return; }
+  if (!name) {
+    res.status(400).send({ error: 'name required' });
+    return;
+  }
   const imageUrl = await fetchScryfallCardImage(name);
-  if (!imageUrl) { res.status(404).send({ error: 'Card not found' }); return; }
+  if (!imageUrl) {
+    res.status(404).send({ error: 'Card not found' });
+    return;
+  }
   res.send({ imageUrl });
 });
 
@@ -608,8 +850,12 @@ initDb()
   .then(() => {
     app.listen(port, () => {
       console.log(`[MtgPacker API] http://localhost:${port}`);
-      console.log(`[MtgPacker API] OAuth: ${oauthEnabled ? 'enabled (GitHub)' : 'disabled (dev auto-login)'}`);
-      console.log(`[MtgPacker API] Admin users: ${ADMIN_USERS.length ? ADMIN_USERS.join(', ') : '(all, dev mode)'}`);
+      console.log(
+        `[MtgPacker API] OAuth: ${oauthEnabled ? 'enabled (GitHub)' : 'disabled (dev auto-login)'}`,
+      );
+      console.log(
+        `[MtgPacker API] Admin users: ${ADMIN_USERS.length ? ADMIN_USERS.join(', ') : '(all, dev mode)'}`,
+      );
     });
   })
   .catch((err) => {
