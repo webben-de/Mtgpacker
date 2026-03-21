@@ -1,72 +1,395 @@
-import { Component } from '@angular/core';
-import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
+import { Component, OnInit, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { OrdersByUserPipe } from './orders-by-user.pipe';
+
+interface Deck {
+  id: number;
+  name: string;
+  url?: string;
+  commander_image?: string;
+}
+
+interface GameEvent {
+  id: number;
+  title: string;
+  date: string;
+}
+
+interface SummaryRow { title: string; name: string; stimmen: number; }
+interface DetailRow  { event: string; deck: string; teilnehmer: string; }
+
+interface Order {
+  id: number;
+  user_name: string;
+  github_login: string;
+  github_avatar: string;
+  moxfield_url: string;
+  deck_name: string;
+  card_count: number;
+  total_price: number;
+  notes: string;
+  status: string;
+  created_at: string;
+}
+
+interface MoxfieldPreview {
+  deckName: string;
+  commanderImage: string | null;
+  cardCount: number;
+  cardList: Array<{ name: string; quantity: number; set?: string }>;
+}
+
+interface GitHubUser {
+  id: string;
+  login: string;
+  displayName: string;
+  avatar: string;
+  isAdmin: boolean;
+}
+
+type MenuView = 'Teilnehmer-Ansicht' | 'Verwalter-Bereich' | 'Bestellen';
+
+const ORDER_STATUSES = ['offen', 'in Bearbeitung', 'abgeschlossen', 'storniert'] as const;
+const PRICE_PER_CARD = 0.07;
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive],
-  template: `
-    <div class="flex min-h-dvh bg-mtg-bg">
-
-      <!-- Sidebar -->
-      <aside class="w-60 bg-mtg-card border-r border-mtg-border flex flex-col shrink-0">
-
-        <!-- Brand -->
-        <div class="px-5 py-6 border-b border-mtg-border">
-          <div class="flex items-center gap-3">
-            <div class="w-9 h-9 rounded-lg bg-mtg-primary/20 border border-mtg-primary/40 flex items-center justify-center shadow-glow-primary">
-              <svg class="w-5 h-5 text-mtg-secondary" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09Z"/>
-              </svg>
-            </div>
-            <div>
-              <p class="font-display text-base text-mtg-gold leading-none">MtG Packer</p>
-              <p class="font-body text-xs text-mtg-muted mt-0.5">Koffer-Optimierer</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Nav -->
-        <nav class="flex-1 p-3 space-y-1" aria-label="Hauptnavigation">
-          <a routerLink="/vote" routerLinkActive="bg-mtg-primary/15 text-mtg-text border-mtg-primary/40"
-             ariaCurrentWhenActive="page"
-             class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-mtg-muted border border-transparent hover:bg-mtg-card-hover hover:text-mtg-text hover:border-mtg-border transition-all duration-200 cursor-pointer font-body text-sm">
-            <svg class="w-[18px] h-[18px] shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25Z"/>
-            </svg>
-            <span>Abstimmung</span>
-          </a>
-
-          <a routerLink="/admin" routerLinkActive="bg-mtg-primary/15 text-mtg-text border-mtg-primary/40"
-             ariaCurrentWhenActive="page"
-             class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-mtg-muted border border-transparent hover:bg-mtg-card-hover hover:text-mtg-text hover:border-mtg-border transition-all duration-200 cursor-pointer font-body text-sm">
-            <svg class="w-[18px] h-[18px] shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z"/>
-              <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
-            </svg>
-            <span>Admin</span>
-          </a>
-        </nav>
-
-        <!-- Footer -->
-        <div class="px-4 py-4 border-t border-mtg-border">
-          <p class="font-body text-xs text-mtg-muted mb-1.5">Powered by</p>
-          <div class="flex gap-3">
-            <a href="https://scryfall.com" target="_blank" rel="noopener noreferrer"
-               class="font-body text-xs text-mtg-secondary hover:text-mtg-text transition-colors duration-150">Scryfall</a>
-            <span class="text-mtg-border">\u00B7</span>
-            <a href="https://moxfield.com" target="_blank" rel="noopener noreferrer"
-               class="font-body text-xs text-mtg-secondary hover:text-mtg-text transition-colors duration-150">Moxfield</a>
-          </div>
-        </div>
-      </aside>
-
-      <!-- Main -->
-      <main class="flex-1 overflow-auto min-w-0">
-        <router-outlet />
-      </main>
-
-    </div>
-  `,
+  imports: [FormsModule, CommonModule, OrdersByUserPipe],
+  templateUrl: './app.html',
+  styleUrl: './app.scss',
 })
-export class App {}
+export class App implements OnInit {
+  private http = inject(HttpClient);
+  private readonly apiUrl = '/api';
+
+  // ── Auth ─────────────────────────────────────────────────────────
+  currentUser: GitHubUser | null = null;
+  oauthEnabled = false;
+
+  // ── Navigation ────────────────────────────────────────────────────
+  menu: MenuView = 'Teilnehmer-Ansicht';
+  adminTab: 'decks' | 'events' | 'results' | 'orders' = 'decks';
+  viewMode: 'Raster' | 'Liste' = 'Raster';
+  addMode: 'Moxfield-Import' | 'Manuell (Scryfall-Suche)' = 'Moxfield-Import';
+
+  // ── Feedback ──────────────────────────────────────────────────────
+  infoMessage = '';
+  errorMessage = '';
+
+  // ── Data ──────────────────────────────────────────────────────────
+  decks: Deck[] = [];
+  events: GameEvent[] = [];
+  availableDecks: Deck[] = [];
+  summaryRows: SummaryRow[] = [];
+  detailRows: DetailRow[] = [];
+  orders: Order[] = [];
+  readonly orderStatuses = ORDER_STATUSES;
+
+  // ── Voting state ──────────────────────────────────────────────────
+  userName = '';
+  selectedEventId: number | null = null;
+  selectedDeckIds = new Set<number>();
+
+  // ── Admin event form ──────────────────────────────────────────────
+  eventTitle = '';
+  eventDate = '';
+
+  // ── Admin deck form ───────────────────────────────────────────────
+  moxUrl = '';
+  manualDeckName = '';
+  commanderQuery = '';
+  commanderSuggestions: string[] = [];
+  selectedCommander = '';
+  commanderPreviewImage = '';
+
+  // ── Order form ────────────────────────────────────────────────────
+  orderMoxUrl = '';
+  orderNotes = '';
+  orderPreview: MoxfieldPreview | null = null;
+  orderLoading = false;
+  orderSubmitting = false;
+  readonly pricePerCard = PRICE_PER_CARD;
+
+  get orderTotalPrice(): number {
+    return Math.round((this.orderPreview?.cardCount ?? 0) * PRICE_PER_CARD * 100) / 100;
+  }
+
+  // ── Lifecycle ─────────────────────────────────────────────────────
+
+  ngOnInit() {
+    this.loadAuth();
+    this.loadDecks();
+    this.loadEvents();
+  }
+
+  // ── Auth ──────────────────────────────────────────────────────────
+
+  private loadAuth() {
+    this.http.get<GitHubUser | null>(`${this.apiUrl}/auth/me`, { withCredentials: true }).subscribe({
+      next: (u) => {
+        this.currentUser = u;
+        if (u) this.userName = u.displayName || u.login;
+      },
+    });
+    this.http.get<{ oauthEnabled: boolean }>(`${this.apiUrl}/health`).subscribe({
+      next: (h) => (this.oauthEnabled = h.oauthEnabled),
+    });
+  }
+
+  login() {
+    window.location.href = `${this.apiUrl}/auth/github`;
+  }
+
+  logout() {
+    this.http.post(`${this.apiUrl}/auth/logout`, {}, { withCredentials: true }).subscribe({
+      next: () => {
+        this.currentUser = null;
+        this.userName = '';
+      },
+    });
+  }
+
+  // ── Navigation ────────────────────────────────────────────────────
+
+  onMenuChange() {
+    this.clearMessages();
+    if (this.menu === 'Verwalter-Bereich') this.loadResults();
+    if (this.menu === 'Verwalter-Bereich' && this.adminTab === 'orders') this.loadOrders();
+    if (this.menu === 'Bestellen') this.loadOrders();
+  }
+
+  onAdminTabChange() {
+    if (this.adminTab === 'orders') this.loadOrders();
+    if (this.adminTab === 'results') this.loadResults();
+  }
+
+  onUserNameChange() {
+    this.selectedDeckIds.clear();
+    if (this.selectedEventId && this.userName.trim()) this.loadAvailableDecks();
+  }
+
+  onEventChange() {
+    this.selectedDeckIds.clear();
+    if (this.selectedEventId && this.userName.trim()) this.loadAvailableDecks();
+  }
+
+  // ── Data loading ──────────────────────────────────────────────────
+
+  private loadDecks() {
+    this.http.get<Deck[]>(`${this.apiUrl}/decks`).subscribe({
+      next: (d) => (this.decks = d),
+      error: () => this.showError('Decks konnten nicht geladen werden.'),
+    });
+  }
+
+  private loadEvents() {
+    this.http.get<GameEvent[]>(`${this.apiUrl}/events`).subscribe({
+      next: (e) => (this.events = e),
+      error: () => this.showError('Events konnten nicht geladen werden.'),
+    });
+  }
+
+  private loadAvailableDecks() {
+    if (!this.selectedEventId || !this.userName.trim()) return;
+    const params = `?userName=${encodeURIComponent(this.userName.trim())}`;
+    this.http.get<Deck[]>(`${this.apiUrl}/events/${this.selectedEventId}/available-decks${params}`).subscribe({
+      next: (d) => (this.availableDecks = d),
+      error: () => this.showError('Verfügbare Decks konnten nicht geladen werden.'),
+    });
+  }
+
+  private loadResults() {
+    this.http.get<SummaryRow[]>(`${this.apiUrl}/results/summary`).subscribe({ next: (r) => (this.summaryRows = r) });
+    this.http.get<DetailRow[]>(`${this.apiUrl}/results/details`).subscribe({ next: (r) => (this.detailRows = r) });
+  }
+
+  private loadOrders() {
+    this.http.get<Order[]>(`${this.apiUrl}/orders`).subscribe({ next: (o) => (this.orders = o) });
+  }
+
+  // ── Voting ────────────────────────────────────────────────────────
+
+  toggleDeck(id: number) {
+    if (this.selectedDeckIds.has(id)) {
+      this.selectedDeckIds.delete(id);
+    } else if (this.selectedDeckIds.size < 2) {
+      this.selectedDeckIds.add(id);
+    } else {
+      this.showError('Maximal 2 Decks können ausgewählt werden.');
+    }
+  }
+
+  submitVotes() {
+    if (!this.selectedEventId || !this.userName.trim() || this.selectedDeckIds.size === 0) return;
+    this.clearMessages();
+    this.http.post(`${this.apiUrl}/votes`, {
+      eventId: this.selectedEventId,
+      userName: this.userName.trim(),
+      deckIds: [...this.selectedDeckIds],
+    }).subscribe({
+      next: () => {
+        this.showInfo('Deine Wünsche wurden gespeichert!');
+        this.selectedDeckIds.clear();
+        this.loadAvailableDecks();
+      },
+      error: () => this.showError('Abstimmung konnte nicht gespeichert werden.'),
+    });
+  }
+
+  // ── Admin: decks ──────────────────────────────────────────────────
+
+  importDeckFromMoxfield() {
+    if (!this.moxUrl.includes('moxfield.com')) return;
+    this.clearMessages();
+    this.http.post<Deck>(`${this.apiUrl}/decks/import-moxfield`, { url: this.moxUrl }).subscribe({
+      next: (deck) => {
+        this.showInfo(`"${deck.name}" erfolgreich importiert.`);
+        this.moxUrl = '';
+        this.loadDecks();
+      },
+      error: () => this.showError('Moxfield-Import fehlgeschlagen.'),
+    });
+  }
+
+  addManualDeck() {
+    if (!this.manualDeckName.trim()) return;
+    this.clearMessages();
+    this.http.post<Deck>(`${this.apiUrl}/decks`, {
+      name: this.manualDeckName.trim(),
+      commander_name: this.selectedCommander || null,
+      commander_image: this.commanderPreviewImage || null,
+    }).subscribe({
+      next: (deck) => {
+        this.showInfo(`"${deck.name}" wurde hinzugefügt.`);
+        this.manualDeckName = '';
+        this.selectedCommander = '';
+        this.commanderPreviewImage = '';
+        this.commanderQuery = '';
+        this.loadDecks();
+      },
+      error: () => this.showError('Deck konnte nicht hinzugefügt werden.'),
+    });
+  }
+
+  deleteDeck(id: number) {
+    if (!confirm('Deck wirklich löschen?')) return;
+    this.clearMessages();
+    this.http.delete(`${this.apiUrl}/decks/${id}`).subscribe({
+      next: () => { this.showInfo('Deck wurde gelöscht.'); this.loadDecks(); },
+      error: () => this.showError('Deck konnte nicht gelöscht werden.'),
+    });
+  }
+
+  // ── Admin: events ─────────────────────────────────────────────────
+
+  createEvent() {
+    if (!this.eventTitle.trim() || !this.eventDate) return;
+    this.clearMessages();
+    this.http.post<GameEvent>(`${this.apiUrl}/events`, {
+      title: this.eventTitle.trim(), date: this.eventDate,
+    }).subscribe({
+      next: (ev) => {
+        this.showInfo(`Event "${ev.title}" wurde angelegt.`);
+        this.eventTitle = '';
+        this.eventDate = '';
+        this.loadEvents();
+      },
+      error: () => this.showError('Event konnte nicht erstellt werden.'),
+    });
+  }
+
+  // ── Admin: orders ─────────────────────────────────────────────────
+
+  updateOrderStatus(id: number, status: string) {
+    this.http.patch(`${this.apiUrl}/orders/${id}`, { status }, { withCredentials: true }).subscribe({
+      next: () => this.loadOrders(),
+      error: () => this.showError('Status konnte nicht aktualisiert werden.'),
+    });
+  }
+
+  getStatusBadgeClass(status: string): string {
+    const map: Record<string, string> = {
+      'offen': 'badge bg-amber-500/20 text-amber-300',
+      'in Bearbeitung': 'badge bg-blue-500/20 text-blue-300',
+      'abgeschlossen': 'badge bg-emerald-500/20 text-emerald-300',
+      'storniert': 'badge bg-red-500/20 text-red-300',
+    };
+    return map[status] ?? 'badge';
+  }
+
+  // ── Order form ────────────────────────────────────────────────────
+
+  previewOrder() {
+    if (!this.orderMoxUrl.includes('moxfield.com')) return;
+    this.orderLoading = true;
+    this.orderPreview = null;
+    this.clearMessages();
+    this.http.post<MoxfieldPreview>(`${this.apiUrl}/decks/preview-moxfield`, { url: this.orderMoxUrl }).subscribe({
+      next: (p) => { this.orderPreview = p; this.orderLoading = false; },
+      error: () => { this.showError('Deck konnte nicht geladen werden.'); this.orderLoading = false; },
+    });
+  }
+
+  submitOrder() {
+    if (!this.orderPreview || !this.userName.trim()) return;
+    this.orderSubmitting = true;
+    this.clearMessages();
+    this.http.post<Order>(`${this.apiUrl}/orders`, {
+      moxfieldUrl: this.orderMoxUrl,
+      userName: this.userName.trim(),
+      notes: this.orderNotes,
+    }, { withCredentials: true }).subscribe({
+      next: (o) => {
+        this.showInfo(`Bestellung für "${o.deck_name}" (${o.card_count} Karten, ${o.total_price.toFixed(2)} €) aufgegeben!`);
+        this.orderMoxUrl = '';
+        this.orderNotes = '';
+        this.orderPreview = null;
+        this.orderSubmitting = false;
+        this.loadOrders();
+      },
+      error: () => { this.showError('Bestellung konnte nicht aufgegeben werden.'); this.orderSubmitting = false; },
+    });
+  }
+
+  // ── Scryfall ──────────────────────────────────────────────────────
+
+  searchCommanderAutocomplete() {
+    if (this.commanderQuery.length < 2) { this.commanderSuggestions = []; return; }
+    this.http.get<{ data: string[] }>(
+      `${this.apiUrl}/scryfall/autocomplete?q=${encodeURIComponent(this.commanderQuery)}`,
+    ).subscribe({
+      next: (res) => (this.commanderSuggestions = res.data?.slice(0, 8) ?? []),
+      error: () => (this.commanderSuggestions = []),
+    });
+  }
+
+  updateCommanderSelection() {
+    if (!this.selectedCommander) return;
+    this.commanderQuery = this.selectedCommander;
+    this.http.get<{ imageUrl: string }>(
+      `${this.apiUrl}/scryfall/card-image?name=${encodeURIComponent(this.selectedCommander)}`,
+    ).subscribe({
+      next: (res) => (this.commanderPreviewImage = res.imageUrl ?? ''),
+      error: () => (this.commanderPreviewImage = ''),
+    });
+  }
+
+  // ── Utilities ─────────────────────────────────────────────────────
+
+  private showInfo(msg: string) {
+    this.infoMessage = msg; this.errorMessage = '';
+    setTimeout(() => (this.infoMessage = ''), 5000);
+  }
+
+  private showError(msg: string) {
+    this.errorMessage = msg; this.infoMessage = '';
+    setTimeout(() => (this.errorMessage = ''), 7000);
+  }
+
+  private clearMessages() {
+    this.infoMessage = ''; this.errorMessage = '';
+  }
+}
