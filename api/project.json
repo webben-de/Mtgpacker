@@ -22,6 +22,9 @@
         "production": {}
       }
     },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
     "prune-lockfile": {
       "dependsOn": ["build"],
       "cache": true,
