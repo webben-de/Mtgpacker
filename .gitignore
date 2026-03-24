@@ -7,3 +7,5 @@ node_modules
 
 .angular
 dist
+dist/api/main.js
+dist/api/main.js.map
