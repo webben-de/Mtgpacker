@@ -1,0 +1,289 @@
+<div class="max-w-3xl mx-auto">
+  <header class="mb-8">
+    <h1 class="font-display text-3xl text-mtg-gold mb-1">Proxies bestellen</h1>
+    <p class="font-body text-sm text-mtg-muted">
+      Importiere ein Moxfield-Deck und erhalte hochwertige Proxy-Karten fuer
+      <span class="text-mtg-secondary font-semibold">{{
+        vm.pricePerCard | currency: 'EUR' : 'symbol' : '1.2-2' : 'de'
+      }}</span>
+      pro Karte.
+    </p>
+  </header>
+
+  @if (!vm.currentUser) {
+    <div class="card p-4 mb-6 flex items-center gap-4">
+      <svg
+        class="w-5 h-5 text-mtg-secondary shrink-0"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.5"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"
+        />
+      </svg>
+      <div class="flex-1">
+        <label
+          for="order-user"
+          class="block font-body text-xs font-medium text-mtg-secondary mb-1.5 uppercase tracking-wider"
+          >Dein Name <span class="text-mtg-accent">*</span></label
+        >
+        <input
+          id="order-user"
+          [(ngModel)]="vm.userName"
+          type="text"
+          placeholder="Name fuer die Bestellung"
+          class="input"
+        />
+      </div>
+    </div>
+  }
+
+  <div class="card p-5 mb-6">
+    <label
+      for="order-mox"
+      class="block font-body text-xs font-medium text-mtg-secondary mb-2 uppercase tracking-wider"
+      >Moxfield Deck URL <span class="text-mtg-accent">*</span></label
+    >
+    <div class="flex gap-3">
+      <input
+        id="order-mox"
+        [(ngModel)]="vm.orderMoxUrl"
+        type="url"
+        placeholder="https://www.moxfield.com/decks/..."
+        class="input flex-1"
+        (keydown.enter)="vm.previewOrder()"
+      />
+      <button
+        (click)="vm.previewOrder()"
+        [disabled]="vm.orderLoading || !vm.orderMoxUrl.includes('moxfield.com')"
+        class="btn-primary shrink-0"
+      >
+        @if (vm.orderLoading) {
+          <svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+            <circle
+              class="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              stroke-width="4"
+            />
+            <path
+              class="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+            />
+          </svg>
+          Laden...
+        } @else {
+          <svg
+            class="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
+            />
+          </svg>
+          Vorschau
+        }
+      </button>
+    </div>
+  </div>
+
+  @if (vm.orderPreview) {
+    <div class="card overflow-hidden mb-6 animate-scale-in">
+      <div class="flex gap-5 p-5 border-b border-mtg-border">
+        @if (vm.orderPreview.commanderImage) {
+          <img
+            [src]="vm.orderPreview.commanderImage"
+            [alt]="vm.orderPreview.deckName"
+            class="w-20 rounded-lg shrink-0 object-cover shadow-card"
+            style="aspect-ratio: 5/7"
+            loading="lazy"
+          />
+        }
+        <div class="flex-1 min-w-0">
+          <h3 class="font-display text-xl text-mtg-gold mb-1 truncate">
+            {{ vm.orderPreview.deckName }}
+          </h3>
+          <div class="flex flex-wrap gap-3 mt-3">
+            <div class="card px-3 py-2 text-center">
+              <p class="font-body text-xs text-mtg-muted mb-0.5">Karten</p>
+              <p class="font-display text-2xl text-mtg-text">
+                {{ vm.orderPreview.cardCount }}
+              </p>
+            </div>
+            <div class="card px-3 py-2 text-center">
+              <p class="font-body text-xs text-mtg-muted mb-0.5">Preis/Karte</p>
+              <p class="font-display text-2xl text-mtg-secondary">
+                {{
+                  vm.pricePerCard | currency: 'EUR' : 'symbol' : '1.2-2' : 'de'
+                }}
+              </p>
+            </div>
+            <div
+              class="card px-4 py-2 text-center border-mtg-primary/40 shadow-glow-primary"
+            >
+              <p class="font-body text-xs text-mtg-muted mb-0.5">Gesamt</p>
+              <p class="font-display text-2xl text-mtg-gold">
+                {{
+                  vm.orderTotalPrice
+                    | currency: 'EUR' : 'symbol' : '1.2-2' : 'de'
+                }}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      @if (vm.orderPreview.cardList.length > 0) {
+        <details class="group">
+          <summary
+            class="flex items-center justify-between px-5 py-3 cursor-pointer hover:bg-mtg-card-hover transition-colors duration-150 list-none"
+          >
+            <span class="font-body text-sm text-mtg-secondary"
+              >{{ vm.orderPreview.cardList.length }} verschiedene Karten
+              anzeigen</span
+            >
+            <svg
+              class="w-4 h-4 text-mtg-muted group-open:rotate-180 transition-transform duration-200"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="m19.5 8.25-7.5 7.5-7.5-7.5"
+              />
+            </svg>
+          </summary>
+          <div class="max-h-64 overflow-y-auto px-5 pb-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1 pt-2">
+              @for (card of vm.orderPreview.cardList; track card.name) {
+                <div
+                  class="flex items-center justify-between py-1 border-b border-mtg-border/30"
+                >
+                  <span class="font-body text-xs text-mtg-text truncate">{{
+                    card.name
+                  }}</span>
+                  <span class="font-body text-xs text-mtg-muted ml-2 shrink-0"
+                    >x{{ card.quantity }}</span
+                  >
+                </div>
+              }
+            </div>
+          </div>
+        </details>
+      }
+    </div>
+
+    <div class="card p-5 mb-6">
+      <label
+        for="order-notes"
+        class="block font-body text-xs font-medium text-mtg-secondary mb-2 uppercase tracking-wider"
+        >Anmerkungen (optional)</label
+      >
+      <textarea
+        id="order-notes"
+        [(ngModel)]="vm.orderNotes"
+        rows="3"
+        placeholder="z. B. Foil-Karten, besondere Wuensche, Sleeves..."
+        class="input resize-none"
+      ></textarea>
+    </div>
+
+    <button
+      (click)="vm.submitOrder()"
+      [disabled]="vm.orderSubmitting || !vm.userName.trim() || !vm.orderPreview"
+      class="btn-accent w-full justify-center"
+    >
+      @if (vm.orderSubmitting) {
+        <svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+          <circle
+            class="opacity-25"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            stroke-width="4"
+          />
+          <path
+            class="opacity-75"
+            fill="currentColor"
+            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+          />
+        </svg>
+        Bestellung wird aufgegeben...
+      } @else {
+        <svg
+          class="w-4 h-4"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007Z"
+          />
+        </svg>
+        Jetzt fuer
+        {{ vm.orderTotalPrice | currency: 'EUR' : 'symbol' : '1.2-2' : 'de' }}
+        bestellen
+      }
+    </button>
+  }
+
+  @if (vm.orders.length > 0) {
+    <div class="mt-10">
+      <h2 class="section-title mb-4">Meine Bestellungen</h2>
+      <div class="space-y-3">
+        @for (order of vm.orders | ordersByUser: vm.userName; track order.id) {
+          <div class="card p-4">
+            <div class="flex items-start justify-between gap-4">
+              <div class="flex-1 min-w-0">
+                <p
+                  class="font-body text-sm font-semibold text-mtg-text truncate"
+                >
+                  {{ order.deck_name }}
+                </p>
+                <p class="font-body text-xs text-mtg-muted mt-0.5">
+                  {{ order.card_count }} Karten .
+                  {{
+                    order.total_price
+                      | currency: 'EUR' : 'symbol' : '1.2-2' : 'de'
+                  }}
+                </p>
+                @if (order.notes) {
+                  <p class="font-body text-xs text-mtg-muted/70 mt-1 italic">
+                    {{ order.notes }}
+                  </p>
+                }
+              </div>
+              <div class="flex flex-col items-end gap-1.5 shrink-0">
+                <span [class]="vm.getStatusBadgeClass(order.status)">{{
+                  order.status
+                }}</span>
+                <time class="font-body text-[10px] text-mtg-muted">{{
+                  order.created_at | date: 'dd.MM.yyyy'
+                }}</time>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>

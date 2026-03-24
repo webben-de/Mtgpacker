@@ -1,15 +1,22 @@
 {
-  "installation": {
-    "version": "22.6.1",
-    "plugins": {
-      "@nx/docker": "22.6.1"
-    }
-  },
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
   "analytics": false,
+  "generators": {
+    "@nx/angular:application": {
+      "e2eTestRunner": "none",
+      "linter": "eslint",
+      "style": "scss",
+      "unitTestRunner": "none"
+    }
+  },
+  "installation": {
+    "plugins": {
+      "@nx/docker": "22.6.1"
+    },
+    "version": "22.6.1"
+  },
   "plugins": [
     {
-      "plugin": "@nx/docker",
       "options": {
         "buildTarget": {
           "name": "docker:build"
@@ -17,32 +24,37 @@
         "runTarget": {
           "name": "docker:run"
         }
-      }
+      },
+      "plugin": "@nx/docker"
     },
     {
-      "plugin": "@nx/webpack/plugin",
       "options": {
-        "buildTargetName": "build",
-        "serveTargetName": "serve",
-        "previewTargetName": "preview",
         "buildDepsTargetName": "build-deps",
-        "watchDepsTargetName": "watch-deps",
-        "serveStaticTargetName": "serve-static"
-      }
+        "buildTargetName": "build",
+        "previewTargetName": "preview",
+        "serveStaticTargetName": "serve-static",
+        "serveTargetName": "serve",
+        "watchDepsTargetName": "watch-deps"
+      },
+      "plugin": "@nx/webpack/plugin"
     },
     {
-      "plugin": "@nx/eslint/plugin",
       "options": {
         "targetName": "eslint:lint"
-      }
+      },
+      "plugin": "@nx/eslint/plugin"
     }
   ],
-  "nxCloudId": "69bdd4598446453d0239099a",
   "targetDefaults": {
     "@angular/build:application": {
       "cache": true,
-      "dependsOn": ["^build"],
-      "inputs": ["default", "^default"]
+      "dependsOn": [
+        "^build"
+      ],
+      "inputs": [
+        "default",
+        "^default"
+      ]
     },
     "@nx/eslint:lint": {
       "cache": true,
@@ -52,14 +64,6 @@
         "{workspaceRoot}/.eslintignore",
         "{workspaceRoot}/eslint.config.mjs"
       ]
-    }
-  },
-  "generators": {
-    "@nx/angular:application": {
-      "e2eTestRunner": "none",
-      "linter": "eslint",
-      "style": "scss",
-      "unitTestRunner": "none"
     }
   }
 }

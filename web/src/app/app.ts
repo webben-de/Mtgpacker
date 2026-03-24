@@ -2,7 +2,11 @@ import { Component, OnInit, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { OrdersByUserPipe } from './orders-by-user.pipe';
+import { SidebarNavComponent } from './components/sidebar-nav/sidebar-nav.component';
+import { GlobalFeedbackComponent } from './components/global-feedback/global-feedback.component';
+import { VotingViewComponent } from './components/voting-view/voting-view.component';
+import { OrderViewComponent } from './components/order-view/order-view.component';
+import { AdminViewComponent } from './components/admin-view/admin-view.component';
 
 interface Deck {
   id: number;
@@ -17,8 +21,16 @@ interface GameEvent {
   date: string;
 }
 
-interface SummaryRow { title: string; name: string; stimmen: number; }
-interface DetailRow  { event: string; deck: string; teilnehmer: string; }
+interface SummaryRow {
+  title: string;
+  name: string;
+  stimmen: number;
+}
+interface DetailRow {
+  event: string;
+  deck: string;
+  teilnehmer: string;
+}
 
 interface Order {
   id: number;
@@ -51,17 +63,32 @@ interface GitHubUser {
 
 type MenuView = 'Teilnehmer-Ansicht' | 'Verwalter-Bereich' | 'Bestellen';
 
-const ORDER_STATUSES = ['offen', 'in Bearbeitung', 'abgeschlossen', 'storniert'] as const;
+const ORDER_STATUSES = [
+  'offen',
+  'in Bearbeitung',
+  'abgeschlossen',
+  'storniert',
+] as const;
 const PRICE_PER_CARD = 0.07;
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [FormsModule, CommonModule, OrdersByUserPipe],
+  imports: [
+    FormsModule,
+    CommonModule,
+    SidebarNavComponent,
+    GlobalFeedbackComponent,
+    VotingViewComponent,
+    OrderViewComponent,
+    AdminViewComponent,
+  ],
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })
 export class App implements OnInit {
+  readonly vm = this;
+
   private http = inject(HttpClient);
   private readonly apiUrl = '/api';
 
@@ -114,7 +141,10 @@ export class App implements OnInit {
   readonly pricePerCard = PRICE_PER_CARD;
 
   get orderTotalPrice(): number {
-    return Math.round((this.orderPreview?.cardCount ?? 0) * PRICE_PER_CARD * 100) / 100;
+    return (
+      Math.round((this.orderPreview?.cardCount ?? 0) * PRICE_PER_CARD * 100) /
+      100
+    );
   }
 
   // ── Lifecycle ─────────────────────────────────────────────────────
@@ -128,15 +158,21 @@ export class App implements OnInit {
   // ── Auth ──────────────────────────────────────────────────────────
 
   private loadAuth() {
-    this.http.get<GitHubUser | null>(`${this.apiUrl}/auth/me`, { withCredentials: true }).subscribe({
-      next: (u) => {
-        this.currentUser = u;
-        if (u) this.userName = u.displayName || u.login;
-      },
-    });
-    this.http.get<{ oauthEnabled: boolean }>(`${this.apiUrl}/health`).subscribe({
-      next: (h) => (this.oauthEnabled = h.oauthEnabled),
-    });
+    this.http
+      .get<GitHubUser | null>(`${this.apiUrl}/auth/me`, {
+        withCredentials: true,
+      })
+      .subscribe({
+        next: (u) => {
+          this.currentUser = u;
+          if (u) this.userName = u.displayName || u.login;
+        },
+      });
+    this.http
+      .get<{ oauthEnabled: boolean }>(`${this.apiUrl}/health`)
+      .subscribe({
+        next: (h) => (this.oauthEnabled = h.oauthEnabled),
+      });
   }
 
   login() {
@@ -144,12 +180,14 @@ export class App implements OnInit {
   }
 
   logout() {
-    this.http.post(`${this.apiUrl}/auth/logout`, {}, { withCredentials: true }).subscribe({
-      next: () => {
-        this.currentUser = null;
-        this.userName = '';
-      },
-    });
+    this.http
+      .post(`${this.apiUrl}/auth/logout`, {}, { withCredentials: true })
+      .subscribe({
+        next: () => {
+          this.currentUser = null;
+          this.userName = '';
+        },
+      });
   }
 
   // ── Navigation ────────────────────────────────────────────────────
@@ -157,7 +195,8 @@ export class App implements OnInit {
   onMenuChange() {
     this.clearMessages();
     if (this.menu === 'Verwalter-Bereich') this.loadResults();
-    if (this.menu === 'Verwalter-Bereich' && this.adminTab === 'orders') this.loadOrders();
+    if (this.menu === 'Verwalter-Bereich' && this.adminTab === 'orders')
+      this.loadOrders();
     if (this.menu === 'Bestellen') this.loadOrders();
   }
 
@@ -195,19 +234,30 @@ export class App implements OnInit {
   private loadAvailableDecks() {
     if (!this.selectedEventId || !this.userName.trim()) return;
     const params = `?userName=${encodeURIComponent(this.userName.trim())}`;
-    this.http.get<Deck[]>(`${this.apiUrl}/events/${this.selectedEventId}/available-decks${params}`).subscribe({
-      next: (d) => (this.availableDecks = d),
-      error: () => this.showError('Verfügbare Decks konnten nicht geladen werden.'),
-    });
+    this.http
+      .get<
+        Deck[]
+      >(`${this.apiUrl}/events/${this.selectedEventId}/available-decks${params}`)
+      .subscribe({
+        next: (d) => (this.availableDecks = d),
+        error: () =>
+          this.showError('Verfügbare Decks konnten nicht geladen werden.'),
+      });
   }
 
   private loadResults() {
-    this.http.get<SummaryRow[]>(`${this.apiUrl}/results/summary`).subscribe({ next: (r) => (this.summaryRows = r) });
-    this.http.get<DetailRow[]>(`${this.apiUrl}/results/details`).subscribe({ next: (r) => (this.detailRows = r) });
+    this.http
+      .get<SummaryRow[]>(`${this.apiUrl}/results/summary`)
+      .subscribe({ next: (r) => (this.summaryRows = r) });
+    this.http
+      .get<DetailRow[]>(`${this.apiUrl}/results/details`)
+      .subscribe({ next: (r) => (this.detailRows = r) });
   }
 
   private loadOrders() {
-    this.http.get<Order[]>(`${this.apiUrl}/orders`).subscribe({ next: (o) => (this.orders = o) });
+    this.http
+      .get<Order[]>(`${this.apiUrl}/orders`)
+      .subscribe({ next: (o) => (this.orders = o) });
   }
 
   // ── Voting ────────────────────────────────────────────────────────
@@ -223,20 +273,28 @@ export class App implements OnInit {
   }
 
   submitVotes() {
-    if (!this.selectedEventId || !this.userName.trim() || this.selectedDeckIds.size === 0) return;
+    if (
+      !this.selectedEventId ||
+      !this.userName.trim() ||
+      this.selectedDeckIds.size === 0
+    )
+      return;
     this.clearMessages();
-    this.http.post(`${this.apiUrl}/votes`, {
-      eventId: this.selectedEventId,
-      userName: this.userName.trim(),
-      deckIds: [...this.selectedDeckIds],
-    }).subscribe({
-      next: () => {
-        this.showInfo('Deine Wünsche wurden gespeichert!');
-        this.selectedDeckIds.clear();
-        this.loadAvailableDecks();
-      },
-      error: () => this.showError('Abstimmung konnte nicht gespeichert werden.'),
-    });
+    this.http
+      .post(`${this.apiUrl}/votes`, {
+        eventId: this.selectedEventId,
+        userName: this.userName.trim(),
+        deckIds: [...this.selectedDeckIds],
+      })
+      .subscribe({
+        next: () => {
+          this.showInfo('Deine Wünsche wurden gespeichert!');
+          this.selectedDeckIds.clear();
+          this.loadAvailableDecks();
+        },
+        error: () =>
+          this.showError('Abstimmung konnte nicht gespeichert werden.'),
+      });
   }
 
   // ── Admin: decks ──────────────────────────────────────────────────
@@ -244,41 +302,52 @@ export class App implements OnInit {
   importDeckFromMoxfield() {
     if (!this.moxUrl.includes('moxfield.com')) return;
     this.clearMessages();
-    this.http.post<Deck>(`${this.apiUrl}/decks/import-moxfield`, { url: this.moxUrl }, { withCredentials: true }).subscribe({
-      next: (deck) => {
-        this.showInfo(`"${deck.name}" erfolgreich importiert.`);
-        this.moxUrl = '';
-        this.loadDecks();
-      },
-      error: () => this.showError('Moxfield-Import fehlgeschlagen.'),
-    });
+    this.http
+      .post<Deck>(
+        `${this.apiUrl}/decks/import-moxfield`,
+        { url: this.moxUrl },
+        { withCredentials: true },
+      )
+      .subscribe({
+        next: (deck) => {
+          this.showInfo(`"${deck.name}" erfolgreich importiert.`);
+          this.moxUrl = '';
+          this.loadDecks();
+        },
+        error: () => this.showError('Moxfield-Import fehlgeschlagen.'),
+      });
   }
 
   addManualDeck() {
     if (!this.manualDeckName.trim()) return;
     this.clearMessages();
-    this.http.post<Deck>(`${this.apiUrl}/decks`, {
-      name: this.manualDeckName.trim(),
-      commander_name: this.selectedCommander || null,
-      commander_image: this.commanderPreviewImage || null,
-    }).subscribe({
-      next: (deck) => {
-        this.showInfo(`"${deck.name}" wurde hinzugefügt.`);
-        this.manualDeckName = '';
-        this.selectedCommander = '';
-        this.commanderPreviewImage = '';
-        this.commanderQuery = '';
-        this.loadDecks();
-      },
-      error: () => this.showError('Deck konnte nicht hinzugefügt werden.'),
-    });
+    this.http
+      .post<Deck>(`${this.apiUrl}/decks`, {
+        name: this.manualDeckName.trim(),
+        commander_name: this.selectedCommander || null,
+        commander_image: this.commanderPreviewImage || null,
+      })
+      .subscribe({
+        next: (deck) => {
+          this.showInfo(`"${deck.name}" wurde hinzugefügt.`);
+          this.manualDeckName = '';
+          this.selectedCommander = '';
+          this.commanderPreviewImage = '';
+          this.commanderQuery = '';
+          this.loadDecks();
+        },
+        error: () => this.showError('Deck konnte nicht hinzugefügt werden.'),
+      });
   }
 
   deleteDeck(id: number) {
     if (!confirm('Deck wirklich löschen?')) return;
     this.clearMessages();
     this.http.delete(`${this.apiUrl}/decks/${id}`).subscribe({
-      next: () => { this.showInfo('Deck wurde gelöscht.'); this.loadDecks(); },
+      next: () => {
+        this.showInfo('Deck wurde gelöscht.');
+        this.loadDecks();
+      },
       error: () => this.showError('Deck konnte nicht gelöscht werden.'),
     });
   }
@@ -288,34 +357,43 @@ export class App implements OnInit {
   createEvent() {
     if (!this.eventTitle.trim() || !this.eventDate) return;
     this.clearMessages();
-    this.http.post<GameEvent>(`${this.apiUrl}/events`, {
-      title: this.eventTitle.trim(), date: this.eventDate,
-    }).subscribe({
-      next: (ev) => {
-        this.showInfo(`Event "${ev.title}" wurde angelegt.`);
-        this.eventTitle = '';
-        this.eventDate = '';
-        this.loadEvents();
-      },
-      error: () => this.showError('Event konnte nicht erstellt werden.'),
-    });
+    this.http
+      .post<GameEvent>(`${this.apiUrl}/events`, {
+        title: this.eventTitle.trim(),
+        date: this.eventDate,
+      })
+      .subscribe({
+        next: (ev) => {
+          this.showInfo(`Event "${ev.title}" wurde angelegt.`);
+          this.eventTitle = '';
+          this.eventDate = '';
+          this.loadEvents();
+        },
+        error: () => this.showError('Event konnte nicht erstellt werden.'),
+      });
   }
 
   // ── Admin: orders ─────────────────────────────────────────────────
 
   updateOrderStatus(id: number, status: string) {
-    this.http.patch(`${this.apiUrl}/orders/${id}`, { status }, { withCredentials: true }).subscribe({
-      next: () => this.loadOrders(),
-      error: () => this.showError('Status konnte nicht aktualisiert werden.'),
-    });
+    this.http
+      .patch(
+        `${this.apiUrl}/orders/${id}`,
+        { status },
+        { withCredentials: true },
+      )
+      .subscribe({
+        next: () => this.loadOrders(),
+        error: () => this.showError('Status konnte nicht aktualisiert werden.'),
+      });
   }
 
   getStatusBadgeClass(status: string): string {
     const map: Record<string, string> = {
-      'offen': 'badge bg-amber-500/20 text-amber-300',
+      offen: 'badge bg-amber-500/20 text-amber-300',
       'in Bearbeitung': 'badge bg-blue-500/20 text-blue-300',
-      'abgeschlossen': 'badge bg-emerald-500/20 text-emerald-300',
-      'storniert': 'badge bg-red-500/20 text-red-300',
+      abgeschlossen: 'badge bg-emerald-500/20 text-emerald-300',
+      storniert: 'badge bg-red-500/20 text-red-300',
     };
     return map[status] ?? 'badge';
   }
@@ -327,69 +405,105 @@ export class App implements OnInit {
     this.orderLoading = true;
     this.orderPreview = null;
     this.clearMessages();
-    this.http.post<MoxfieldPreview>(`${this.apiUrl}/decks/preview-moxfield`, { url: this.orderMoxUrl }).subscribe({
-      next: (p) => { this.orderPreview = p; this.orderLoading = false; },
-      error: () => { this.showError('Deck konnte nicht geladen werden.'); this.orderLoading = false; },
-    });
+    this.http
+      .post<MoxfieldPreview>(`${this.apiUrl}/decks/preview-moxfield`, {
+        url: this.orderMoxUrl,
+      })
+      .subscribe({
+        next: (p) => {
+          this.orderPreview = p;
+          this.orderLoading = false;
+        },
+        error: () => {
+          this.showError('Deck konnte nicht geladen werden.');
+          this.orderLoading = false;
+        },
+      });
   }
 
   submitOrder() {
     if (!this.orderPreview || !this.userName.trim()) return;
     this.orderSubmitting = true;
     this.clearMessages();
-    this.http.post<Order>(`${this.apiUrl}/orders`, {
-      moxfieldUrl: this.orderMoxUrl,
-      userName: this.userName.trim(),
-      notes: this.orderNotes,
-    }, { withCredentials: true }).subscribe({
-      next: (o) => {
-        this.showInfo(`Bestellung für "${o.deck_name}" (${o.card_count} Karten, ${o.total_price.toFixed(2)} €) aufgegeben!`);
-        this.orderMoxUrl = '';
-        this.orderNotes = '';
-        this.orderPreview = null;
-        this.orderSubmitting = false;
-        this.loadOrders();
-      },
-      error: () => { this.showError('Bestellung konnte nicht aufgegeben werden.'); this.orderSubmitting = false; },
-    });
+    this.http
+      .post<Order>(
+        `${this.apiUrl}/orders`,
+        {
+          moxfieldUrl: this.orderMoxUrl,
+          userName: this.userName.trim(),
+          notes: this.orderNotes,
+        },
+        { withCredentials: true },
+      )
+      .subscribe({
+        next: (o) => {
+          this.showInfo(
+            `Bestellung für "${o.deck_name}" (${o.card_count} Karten, ${o.total_price.toFixed(2)} €) aufgegeben!`,
+          );
+          this.orderMoxUrl = '';
+          this.orderNotes = '';
+          this.orderPreview = null;
+          this.orderSubmitting = false;
+          this.loadOrders();
+        },
+        error: () => {
+          this.showError('Bestellung konnte nicht aufgegeben werden.');
+          this.orderSubmitting = false;
+        },
+      });
   }
 
   // ── Scryfall ──────────────────────────────────────────────────────
 
   searchCommanderAutocomplete() {
-    if (this.commanderQuery.length < 2) { this.commanderSuggestions = []; return; }
-    this.http.get<{ data: string[] }>(
-      `${this.apiUrl}/scryfall/autocomplete?q=${encodeURIComponent(this.commanderQuery)}`,
-    ).subscribe({
-      next: (res) => (this.commanderSuggestions = res.data?.slice(0, 8) ?? []),
-      error: () => (this.commanderSuggestions = []),
-    });
+    if (this.commanderQuery.length < 2) {
+      this.commanderSuggestions = [];
+      return;
+    }
+    this.http
+      .get<{
+        data: string[];
+      }>(
+        `${this.apiUrl}/scryfall/autocomplete?q=${encodeURIComponent(this.commanderQuery)}`,
+      )
+      .subscribe({
+        next: (res) =>
+          (this.commanderSuggestions = res.data?.slice(0, 8) ?? []),
+        error: () => (this.commanderSuggestions = []),
+      });
   }
 
   updateCommanderSelection() {
     if (!this.selectedCommander) return;
     this.commanderQuery = this.selectedCommander;
-    this.http.get<{ imageUrl: string }>(
-      `${this.apiUrl}/scryfall/card-image?name=${encodeURIComponent(this.selectedCommander)}`,
-    ).subscribe({
-      next: (res) => (this.commanderPreviewImage = res.imageUrl ?? ''),
-      error: () => (this.commanderPreviewImage = ''),
-    });
+    this.http
+      .get<{
+        imageUrl: string;
+      }>(
+        `${this.apiUrl}/scryfall/card-image?name=${encodeURIComponent(this.selectedCommander)}`,
+      )
+      .subscribe({
+        next: (res) => (this.commanderPreviewImage = res.imageUrl ?? ''),
+        error: () => (this.commanderPreviewImage = ''),
+      });
   }
 
   // ── Utilities ─────────────────────────────────────────────────────
 
   private showInfo(msg: string) {
-    this.infoMessage = msg; this.errorMessage = '';
+    this.infoMessage = msg;
+    this.errorMessage = '';
     setTimeout(() => (this.infoMessage = ''), 5000);
   }
 
   private showError(msg: string) {
-    this.errorMessage = msg; this.infoMessage = '';
+    this.errorMessage = msg;
+    this.infoMessage = '';
     setTimeout(() => (this.errorMessage = ''), 7000);
   }
 
   private clearMessages() {
-    this.infoMessage = ''; this.errorMessage = '';
+    this.infoMessage = '';
+    this.errorMessage = '';
   }
 }

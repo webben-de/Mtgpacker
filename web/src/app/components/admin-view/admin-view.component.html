@@ -1,0 +1,626 @@
+<div class="max-w-4xl mx-auto">
+  <header class="mb-8">
+    <h1 class="font-display text-3xl text-mtg-gold mb-1">Admin Dashboard</h1>
+    <p class="font-body text-sm text-mtg-muted">
+      Verwalte Decks, Events, Abstimmungen und Bestellungen.
+    </p>
+  </header>
+
+  <div
+    class="flex border-b border-mtg-border mb-8 gap-1 flex-wrap"
+    role="tablist"
+  >
+    <button
+      (click)="vm.adminTab = 'decks'; vm.onAdminTabChange()"
+      [class]="vm.adminTab === 'decks' ? 'tab-btn-active' : 'tab-btn'"
+      role="tab"
+    >
+      Decks
+    </button>
+    <button
+      (click)="vm.adminTab = 'events'; vm.onAdminTabChange()"
+      [class]="vm.adminTab === 'events' ? 'tab-btn-active' : 'tab-btn'"
+      role="tab"
+    >
+      Events
+    </button>
+    <button
+      (click)="vm.adminTab = 'results'; vm.onAdminTabChange()"
+      [class]="vm.adminTab === 'results' ? 'tab-btn-active' : 'tab-btn'"
+      role="tab"
+    >
+      Auswertung
+    </button>
+    <button
+      (click)="vm.adminTab = 'orders'; vm.onAdminTabChange()"
+      [class]="vm.adminTab === 'orders' ? 'tab-btn-active' : 'tab-btn'"
+      role="tab"
+    >
+      Bestellungen
+      @if (vm.orders.length > 0) {
+        <span class="ml-1.5 badge badge-primary">{{ vm.orders.length }}</span>
+      }
+    </button>
+  </div>
+
+  @if (vm.adminTab === 'decks') {
+    <div class="animate-fade-in">
+      <h2 class="section-title mb-5">Neues Deck hinzufuegen</h2>
+      <div
+        class="flex bg-mtg-bg border border-mtg-border rounded-lg overflow-hidden w-fit mb-5"
+        role="group"
+      >
+        <button
+          (click)="vm.addMode = 'Moxfield-Import'"
+          [class]="
+            vm.addMode === 'Moxfield-Import'
+              ? 'bg-mtg-primary text-white'
+              : 'text-mtg-muted hover:text-mtg-text'
+          "
+          class="px-4 py-2 font-body text-sm transition-colors duration-150 cursor-pointer"
+        >
+          Moxfield Import
+        </button>
+        <button
+          (click)="vm.addMode = 'Manuell (Scryfall-Suche)'"
+          [class]="
+            vm.addMode === 'Manuell (Scryfall-Suche)'
+              ? 'bg-mtg-primary text-white'
+              : 'text-mtg-muted hover:text-mtg-text'
+          "
+          class="px-4 py-2 font-body text-sm transition-colors duration-150 cursor-pointer"
+        >
+          Manuell
+        </button>
+      </div>
+
+      @if (vm.addMode === 'Moxfield-Import') {
+        <div class="card p-5 mb-8">
+          <label
+            for="mox-url"
+            class="block font-body text-xs font-medium text-mtg-secondary mb-2 uppercase tracking-wider"
+            >Moxfield Link</label
+          >
+          <div class="flex gap-3">
+            <input
+              id="mox-url"
+              [(ngModel)]="vm.moxUrl"
+              type="url"
+              placeholder="https://www.moxfield.com/decks/..."
+              class="input flex-1"
+            />
+            <button
+              (click)="vm.importDeckFromMoxfield()"
+              [disabled]="!vm.moxUrl.includes('moxfield.com')"
+              class="btn-primary shrink-0"
+            >
+              <svg
+                class="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"
+                />
+              </svg>
+              Importieren
+            </button>
+          </div>
+        </div>
+      }
+
+      @if (vm.addMode === 'Manuell (Scryfall-Suche)') {
+        <div class="card p-5 mb-8 space-y-4">
+          <div>
+            <label
+              for="deck-name"
+              class="block font-body text-xs font-medium text-mtg-secondary mb-2 uppercase tracking-wider"
+              >Deck-Name <span class="text-mtg-accent">*</span></label
+            >
+            <input
+              id="deck-name"
+              [(ngModel)]="vm.manualDeckName"
+              type="text"
+              placeholder="z. B. Zur's Weirding Control"
+              class="input"
+            />
+          </div>
+          <div>
+            <label
+              for="commander-search"
+              class="block font-body text-xs font-medium text-mtg-secondary mb-2 uppercase tracking-wider"
+              >Commander suchen</label
+            >
+            <input
+              id="commander-search"
+              [(ngModel)]="vm.commanderQuery"
+              (ngModelChange)="vm.searchCommanderAutocomplete()"
+              type="text"
+              placeholder="z. B. Atraxa, Praetors' Voice"
+              class="input"
+              autocomplete="off"
+            />
+            @if (vm.commanderSuggestions.length > 0) {
+              <ul class="mt-1 card py-1 max-h-44 overflow-y-auto">
+                @for (s of vm.commanderSuggestions; track s) {
+                  <li
+                    (click)="
+                      vm.selectedCommander = s;
+                      vm.updateCommanderSelection();
+                      vm.commanderSuggestions = []
+                    "
+                    (keydown.enter)="
+                      vm.selectedCommander = s;
+                      vm.updateCommanderSelection();
+                      vm.commanderSuggestions = []
+                    "
+                    (keydown.space)="
+                      vm.selectedCommander = s;
+                      vm.updateCommanderSelection();
+                      vm.commanderSuggestions = [];
+                      $event.preventDefault()
+                    "
+                    role="button"
+                    tabindex="0"
+                    class="px-4 py-2 font-body text-sm text-mtg-text hover:bg-mtg-primary/10 cursor-pointer transition-colors duration-100"
+                  >
+                    {{ s }}
+                  </li>
+                }
+              </ul>
+            }
+            @if (vm.commanderPreviewImage) {
+              <div class="mt-3 flex items-center gap-3 animate-fade-in">
+                <img
+                  [src]="vm.commanderPreviewImage"
+                  [alt]="vm.selectedCommander"
+                  class="w-14 rounded-lg object-cover shadow-card"
+                  style="aspect-ratio: 5/7"
+                  loading="lazy"
+                />
+                <p class="font-body text-sm text-mtg-secondary">
+                  {{ vm.selectedCommander }}
+                </p>
+              </div>
+            }
+          </div>
+          <button
+            (click)="vm.addManualDeck()"
+            [disabled]="!vm.manualDeckName.trim()"
+            class="btn-primary"
+          >
+            <svg
+              class="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M12 4.5v15m7.5-7.5h-15"
+              />
+            </svg>
+            Deck hinzufuegen
+          </button>
+        </div>
+      }
+
+      <h2 class="section-title mb-4">Deckliste ({{ vm.decks.length }})</h2>
+      @if (vm.decks.length === 0) {
+        <div class="card p-10 text-center">
+          <p class="font-body text-sm text-mtg-muted">
+            Noch keine Decks vorhanden.
+          </p>
+        </div>
+      } @else {
+        <div class="space-y-2">
+          @for (deck of vm.decks; track deck.id) {
+            <div class="card flex items-center gap-4 p-3 group">
+              @if (deck.commander_image) {
+                <img
+                  [src]="deck.commander_image"
+                  [alt]="deck.name"
+                  loading="lazy"
+                  class="w-12 rounded-lg shrink-0 object-cover"
+                  style="aspect-ratio: 5/7"
+                />
+              } @else {
+                <div
+                  class="w-12 shrink-0 rounded-lg bg-mtg-border/30 flex items-center justify-center"
+                  style="aspect-ratio: 5/7"
+                >
+                  <svg
+                    class="w-5 h-5 text-mtg-muted/40"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09Z"
+                    />
+                  </svg>
+                </div>
+              }
+              <div class="flex-1 min-w-0">
+                <p
+                  class="font-body text-sm font-semibold text-mtg-text truncate"
+                >
+                  {{ deck.name }}
+                </p>
+                @if (deck.url) {
+                  <a
+                    [href]="deck.url"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="font-body text-xs text-mtg-secondary hover:text-mtg-text transition-colors duration-150"
+                    >Moxfield ↗</a
+                  >
+                }
+              </div>
+              <button
+                (click)="vm.deleteDeck(deck.id)"
+                class="opacity-0 group-hover:opacity-100 p-2 rounded-lg text-mtg-muted hover:text-mtg-destructive hover:bg-mtg-destructive/10 transition-all duration-200 cursor-pointer focus-visible:opacity-100"
+                [attr.aria-label]="'Deck ' + deck.name + ' loeschen'"
+              >
+                <svg
+                  class="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"
+                  />
+                </svg>
+              </button>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+
+  @if (vm.adminTab === 'events') {
+    <div class="animate-fade-in">
+      <h2 class="section-title mb-5">Neuen Spieleabend anlegen</h2>
+      <div class="card p-5 mb-8">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+          <div>
+            <label
+              for="event-title"
+              class="block font-body text-xs font-medium text-mtg-secondary mb-2 uppercase tracking-wider"
+              >Event Name <span class="text-mtg-accent">*</span></label
+            >
+            <input
+              id="event-title"
+              [(ngModel)]="vm.eventTitle"
+              type="text"
+              placeholder="Friday Night Magic"
+              class="input"
+            />
+          </div>
+          <div>
+            <label
+              for="event-date"
+              class="block font-body text-xs font-medium text-mtg-secondary mb-2 uppercase tracking-wider"
+              >Datum <span class="text-mtg-accent">*</span></label
+            >
+            <input
+              id="event-date"
+              [(ngModel)]="vm.eventDate"
+              type="date"
+              class="input"
+            />
+          </div>
+        </div>
+        <button
+          (click)="vm.createEvent()"
+          [disabled]="!vm.eventTitle.trim() || !vm.eventDate"
+          class="btn-primary"
+        >
+          <svg
+            class="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M12 4.5v15m7.5-7.5h-15"
+            />
+          </svg>
+          Event anlegen
+        </button>
+      </div>
+
+      <h2 class="section-title mb-4">Geplante Events</h2>
+      @if (vm.events.length === 0) {
+        <div class="card p-10 text-center">
+          <p class="font-body text-sm text-mtg-muted">
+            Noch keine Events geplant.
+          </p>
+        </div>
+      } @else {
+        <div class="space-y-2">
+          @for (ev of vm.events; track ev.id) {
+            <div class="card flex items-center gap-4 px-4 py-3">
+              <div
+                class="w-9 h-9 rounded-lg bg-mtg-primary/15 border border-mtg-primary/30 flex items-center justify-center shrink-0"
+              >
+                <svg
+                  class="w-4 h-4 text-mtg-secondary"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5"
+                  />
+                </svg>
+              </div>
+              <div>
+                <p class="font-body text-sm font-semibold text-mtg-text">
+                  {{ ev.title }}
+                </p>
+                <time
+                  class="font-body text-xs text-mtg-muted"
+                  [attr.dateTime]="ev.date"
+                  >{{ ev.date }}</time
+                >
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+
+  @if (vm.adminTab === 'results') {
+    <div class="animate-fade-in">
+      <h2 class="section-title mb-5">Packliste - Top Votes</h2>
+      @if (vm.summaryRows.length === 0) {
+        <div class="card p-10 text-center mb-8">
+          <p class="font-body text-sm text-mtg-muted">
+            Noch keine Abstimmungen vorhanden.
+          </p>
+        </div>
+      } @else {
+        <div class="card overflow-hidden mb-8">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="border-b border-mtg-border bg-mtg-bg/50">
+                <th
+                  scope="col"
+                  class="text-left px-4 py-3 font-body text-xs font-medium text-mtg-secondary uppercase tracking-wider"
+                >
+                  Event
+                </th>
+                <th
+                  scope="col"
+                  class="text-left px-4 py-3 font-body text-xs font-medium text-mtg-secondary uppercase tracking-wider"
+                >
+                  Deck
+                </th>
+                <th
+                  scope="col"
+                  class="text-right px-4 py-3 font-body text-xs font-medium text-mtg-secondary uppercase tracking-wider"
+                >
+                  Stimmen
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (row of vm.summaryRows; track $index; let even = $even) {
+                <tr
+                  [class]="even ? 'bg-mtg-bg/20' : ''"
+                  class="border-b border-mtg-border/50 hover:bg-mtg-primary/5 transition-colors duration-100"
+                >
+                  <td class="px-4 py-3 font-body text-sm text-mtg-text">
+                    {{ row.title }}
+                  </td>
+                  <td class="px-4 py-3 font-body text-sm text-mtg-text">
+                    {{ row.name }}
+                  </td>
+                  <td class="px-4 py-3 text-right">
+                    <span class="badge badge-primary">{{ row.stimmen }}</span>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+
+      <h2 class="section-title mb-4">Teilnehmer Details</h2>
+      @if (vm.detailRows.length === 0) {
+        <div class="card p-10 text-center">
+          <p class="font-body text-sm text-mtg-muted">
+            Keine Details vorhanden.
+          </p>
+        </div>
+      } @else {
+        <div class="card overflow-hidden">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="border-b border-mtg-border bg-mtg-bg/50">
+                <th
+                  scope="col"
+                  class="text-left px-4 py-3 font-body text-xs font-medium text-mtg-secondary uppercase tracking-wider"
+                >
+                  Event
+                </th>
+                <th
+                  scope="col"
+                  class="text-left px-4 py-3 font-body text-xs font-medium text-mtg-secondary uppercase tracking-wider"
+                >
+                  Deck
+                </th>
+                <th
+                  scope="col"
+                  class="text-left px-4 py-3 font-body text-xs font-medium text-mtg-secondary uppercase tracking-wider"
+                >
+                  Teilnehmer
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (row of vm.detailRows; track $index; let even = $even) {
+                <tr
+                  [class]="even ? 'bg-mtg-bg/20' : ''"
+                  class="border-b border-mtg-border/50 hover:bg-mtg-primary/5 transition-colors duration-100"
+                >
+                  <td class="px-4 py-3 font-body text-sm text-mtg-text">
+                    {{ row.event }}
+                  </td>
+                  <td class="px-4 py-3 font-body text-sm text-mtg-text">
+                    {{ row.deck }}
+                  </td>
+                  <td class="px-4 py-3 font-body text-sm text-mtg-muted">
+                    {{ row.teilnehmer }}
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </div>
+  }
+
+  @if (vm.adminTab === 'orders') {
+    <div class="animate-fade-in">
+      <h2 class="section-title mb-5">Alle Bestellungen</h2>
+      @if (vm.orders.length === 0) {
+        <div class="card p-10 text-center">
+          <p class="font-body text-sm text-mtg-muted">
+            Noch keine Bestellungen vorhanden.
+          </p>
+        </div>
+      } @else {
+        <div class="space-y-3">
+          @for (order of vm.orders; track order.id) {
+            <div class="card p-4">
+              <div class="flex items-start gap-4">
+                @if (order.github_avatar) {
+                  <img
+                    [src]="order.github_avatar"
+                    [alt]="order.user_name"
+                    class="w-9 h-9 rounded-full border border-mtg-border shrink-0 mt-0.5"
+                  />
+                } @else {
+                  <div
+                    class="w-9 h-9 rounded-full bg-mtg-primary/15 border border-mtg-primary/20 flex items-center justify-center shrink-0 mt-0.5"
+                  >
+                    <svg
+                      class="w-4 h-4 text-mtg-secondary"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.5"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"
+                      />
+                    </svg>
+                  </div>
+                }
+
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-start justify-between gap-3 flex-wrap">
+                    <div>
+                      <p class="font-body text-sm font-semibold text-mtg-text">
+                        {{ order.deck_name }}
+                      </p>
+                      <p class="font-body text-xs text-mtg-muted mt-0.5">
+                        von
+                        <span class="text-mtg-secondary">{{
+                          order.user_name
+                        }}</span
+                        >{{
+                          order.github_login
+                            ? ' (@' + order.github_login + ')'
+                            : ''
+                        }}
+                      </p>
+                    </div>
+                    <div class="flex flex-col items-end gap-1.5 shrink-0">
+                      <span [class]="vm.getStatusBadgeClass(order.status)">{{
+                        order.status
+                      }}</span>
+                      <time class="font-body text-[10px] text-mtg-muted">{{
+                        order.created_at | date: 'dd.MM.yyyy HH:mm'
+                      }}</time>
+                    </div>
+                  </div>
+
+                  <div class="flex flex-wrap gap-4 mt-2">
+                    <span class="font-body text-xs text-mtg-muted"
+                      >{{ order.card_count }} Karten</span
+                    >
+                    <span
+                      class="font-body text-xs text-mtg-gold font-semibold"
+                      >{{
+                        order.total_price
+                          | currency: 'EUR' : 'symbol' : '1.2-2' : 'de'
+                      }}</span
+                    >
+                    <a
+                      [href]="order.moxfield_url"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="font-body text-xs text-mtg-secondary hover:text-mtg-text transition-colors duration-150"
+                      >Moxfield ↗</a
+                    >
+                  </div>
+
+                  @if (order.notes) {
+                    <p
+                      class="font-body text-xs text-mtg-muted/70 mt-1.5 italic"
+                    >
+                      {{ order.notes }}
+                    </p>
+                  }
+
+                  <div class="flex flex-wrap gap-2 mt-3">
+                    @for (s of vm.orderStatuses; track s) {
+                      <button
+                        (click)="vm.updateOrderStatus(order.id, s)"
+                        [class]="
+                          order.status === s
+                            ? vm.getStatusBadgeClass(s) + ' opacity-100'
+                            : 'badge bg-mtg-bg text-mtg-muted hover:bg-mtg-card-hover'
+                        "
+                        class="cursor-pointer transition-all duration-150"
+                      >
+                        {{ s }}
+                      </button>
+                    }
+                  </div>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+</div>
