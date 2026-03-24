@@ -1,19 +1,35 @@
 <div class="flex min-h-dvh bg-mtg-bg">
-
   <!-- ══ SIDEBAR ════════════════════════════════════════════════════ -->
-  <aside class="w-60 shrink-0 bg-mtg-card border-r border-mtg-border flex flex-col">
-
+  <aside
+    class="w-60 shrink-0 bg-mtg-card border-r border-mtg-border flex flex-col"
+  >
     <!-- Brand -->
     <div class="px-5 py-6 border-b border-mtg-border">
       <div class="flex items-center gap-3">
-        <div class="w-9 h-9 rounded-lg bg-mtg-primary/20 border border-mtg-primary/40 flex items-center justify-center shadow-glow-primary">
-          <svg class="w-5 h-5 text-mtg-secondary" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09Z"/>
+        <div
+          class="w-9 h-9 rounded-lg bg-mtg-primary/20 border border-mtg-primary/40 flex items-center justify-center shadow-glow-primary"
+        >
+          <svg
+            class="w-5 h-5 text-mtg-secondary"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09Z"
+            />
           </svg>
         </div>
         <div>
-          <p class="font-display text-base text-mtg-gold leading-none">MtG Packer</p>
-          <p class="font-body text-xs text-mtg-muted mt-0.5">Koffer-Optimierer</p>
+          <p class="font-display text-base text-mtg-gold leading-none">
+            MtG Packer
+          </p>
+          <p class="font-body text-xs text-mtg-muted mt-0.5">
+            Koffer-Optimierer
+          </p>
         </div>
       </div>
     </div>
@@ -21,35 +37,75 @@
     <!-- Nav -->
     <nav class="flex-1 p-3 space-y-1" aria-label="Hauptnavigation">
       <!-- Abstimmung -->
-      <button (click)="menu = 'Teilnehmer-Ansicht'; onMenuChange()"
+      <button
+        (click)="menu = 'Teilnehmer-Ansicht'; onMenuChange()"
         [class]="menu === 'Teilnehmer-Ansicht'
           ? 'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg bg-mtg-primary/15 text-mtg-text border border-mtg-primary/40 font-body text-sm cursor-pointer transition-all duration-200'
-          : 'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-mtg-muted border border-transparent hover:bg-mtg-card-hover hover:text-mtg-text font-body text-sm cursor-pointer transition-all duration-200'">
-        <svg class="w-[18px] h-[18px] shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25Z"/>
+          : 'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-mtg-muted border border-transparent hover:bg-mtg-card-hover hover:text-mtg-text font-body text-sm cursor-pointer transition-all duration-200'"
+      >
+        <svg
+          class="w-[18px] h-[18px] shrink-0"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25Z"
+          />
         </svg>
         <span>Abstimmung</span>
       </button>
 
       <!-- Proxies bestellen -->
-      <button (click)="menu = 'Bestellen'; onMenuChange()"
+      <button
+        (click)="menu = 'Bestellen'; onMenuChange()"
         [class]="menu === 'Bestellen'
           ? 'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg bg-mtg-primary/15 text-mtg-text border border-mtg-primary/40 font-body text-sm cursor-pointer transition-all duration-200'
-          : 'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-mtg-muted border border-transparent hover:bg-mtg-card-hover hover:text-mtg-text font-body text-sm cursor-pointer transition-all duration-200'">
-        <svg class="w-[18px] h-[18px] shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007Z"/>
+          : 'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-mtg-muted border border-transparent hover:bg-mtg-card-hover hover:text-mtg-text font-body text-sm cursor-pointer transition-all duration-200'"
+      >
+        <svg
+          class="w-[18px] h-[18px] shrink-0"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007Z"
+          />
         </svg>
         <span>Proxies bestellen</span>
       </button>
 
       <!-- Admin -->
-      <button (click)="menu = 'Verwalter-Bereich'; onMenuChange()"
+      <button
+        (click)="menu = 'Verwalter-Bereich'; onMenuChange()"
         [class]="menu === 'Verwalter-Bereich'
           ? 'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg bg-mtg-primary/15 text-mtg-text border border-mtg-primary/40 font-body text-sm cursor-pointer transition-all duration-200'
-          : 'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-mtg-muted border border-transparent hover:bg-mtg-card-hover hover:text-mtg-text font-body text-sm cursor-pointer transition-all duration-200'">
-        <svg class="w-[18px] h-[18px] shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z"/>
-          <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
+          : 'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-mtg-muted border border-transparent hover:bg-mtg-card-hover hover:text-mtg-text font-body text-sm cursor-pointer transition-all duration-200'"
+      >
+        <svg
+          class="w-[18px] h-[18px] shrink-0"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z"
+          />
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+          />
         </svg>
         <span>Admin</span>
       </button>
@@ -58,581 +114,1420 @@
     <!-- Auth / User section -->
     <div class="px-4 py-4 border-t border-mtg-border">
       @if (currentUser) {
-        <div class="flex items-center gap-2.5 mb-3">
-          @if (currentUser.avatar) {
-            <img [src]="currentUser.avatar" [alt]="currentUser.displayName" class="w-7 h-7 rounded-full border border-mtg-border" />
-          } @else {
-            <div class="w-7 h-7 rounded-full bg-mtg-primary/20 border border-mtg-primary/30 flex items-center justify-center">
-              <svg class="w-4 h-4 text-mtg-secondary" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/></svg>
-            </div>
-          }
-          <div class="flex-1 min-w-0">
-            <p class="font-body text-xs font-semibold text-mtg-text truncate">{{ currentUser.displayName || currentUser.login }}</p>
-            @if (currentUser.isAdmin) {
-              <span class="font-body text-[10px] text-mtg-secondary">Admin</span>
-            }
-          </div>
+      <div class="flex items-center gap-2.5 mb-3">
+        @if (currentUser.avatar) {
+        <img
+          [src]="currentUser.avatar"
+          [alt]="currentUser.displayName"
+          class="w-7 h-7 rounded-full border border-mtg-border"
+        />
+        } @else {
+        <div
+          class="w-7 h-7 rounded-full bg-mtg-primary/20 border border-mtg-primary/30 flex items-center justify-center"
+        >
+          <svg
+            class="w-4 h-4 text-mtg-secondary"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"
+            />
+          </svg>
         </div>
-        <button (click)="logout()" class="w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-mtg-muted hover:text-mtg-text hover:bg-mtg-card-hover font-body text-xs cursor-pointer transition-all duration-150 border border-transparent hover:border-mtg-border">
-          <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15m-3 0-3-3m0 0 3-3m-3 3H15"/></svg>
-          Abmelden
-        </button>
+        }
+        <div class="flex-1 min-w-0">
+          <p class="font-body text-xs font-semibold text-mtg-text truncate">
+            {{ currentUser.displayName || currentUser.login }}
+          </p>
+          @if (currentUser.isAdmin) {
+          <span class="font-body text-[10px] text-mtg-secondary">Admin</span>
+          }
+        </div>
+      </div>
+      <button
+        (click)="logout()"
+        class="w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-mtg-muted hover:text-mtg-text hover:bg-mtg-card-hover font-body text-xs cursor-pointer transition-all duration-150 border border-transparent hover:border-mtg-border"
+      >
+        <svg
+          class="w-3.5 h-3.5 shrink-0"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15m-3 0-3-3m0 0 3-3m-3 3H15"
+          />
+        </svg>
+        Abmelden
+      </button>
       } @else {
-        <button (click)="login()" class="w-full flex items-center gap-2 px-3 py-2 rounded-lg bg-mtg-primary/10 hover:bg-mtg-primary/20 text-mtg-secondary hover:text-mtg-text font-body text-xs cursor-pointer transition-all duration-150 border border-mtg-primary/20 hover:border-mtg-primary/40">
-          <svg class="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0 1 12 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
-          Mit GitHub anmelden
-        </button>
-        <p class="font-body text-[10px] text-mtg-muted mt-2 text-center">oder Namen unten eingeben</p>
+      <button
+        (click)="login()"
+        class="w-full flex items-center gap-2 px-3 py-2 rounded-lg bg-mtg-primary/10 hover:bg-mtg-primary/20 text-mtg-secondary hover:text-mtg-text font-body text-xs cursor-pointer transition-all duration-150 border border-mtg-primary/20 hover:border-mtg-primary/40"
+      >
+        <svg class="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 24 24">
+          <path
+            d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0 1 12 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"
+          />
+        </svg>
+        Mit GitHub anmelden
+      </button>
+      <p class="font-body text-[10px] text-mtg-muted mt-2 text-center">
+        oder Namen unten eingeben
+      </p>
       }
       <div class="mt-3 flex gap-2">
-        <a href="https://scryfall.com" target="_blank" rel="noopener noreferrer" class="font-body text-[10px] text-mtg-muted hover:text-mtg-secondary transition-colors duration-150">Scryfall</a>
+        <a
+          href="https://scryfall.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="font-body text-[10px] text-mtg-muted hover:text-mtg-secondary transition-colors duration-150"
+          >Scryfall</a
+        >
         <span class="text-mtg-border">·</span>
-        <a href="https://moxfield.com" target="_blank" rel="noopener noreferrer" class="font-body text-[10px] text-mtg-muted hover:text-mtg-secondary transition-colors duration-150">Moxfield</a>
+        <a
+          href="https://moxfield.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="font-body text-[10px] text-mtg-muted hover:text-mtg-secondary transition-colors duration-150"
+          >Moxfield</a
+        >
       </div>
     </div>
   </aside>
 
   <!-- ══ MAIN ═══════════════════════════════════════════════════════ -->
   <main class="flex-1 overflow-auto min-w-0 p-6 md:p-8 animate-fade-in">
-
     <!-- Global feedback -->
     @if (infoMessage) {
-      <div class="mb-6 rounded-lg bg-emerald-500/10 border border-emerald-500/30 px-4 py-3 flex items-center gap-3 animate-scale-in" role="status" aria-live="polite">
-        <svg class="w-4 h-4 text-emerald-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
-        <p class="font-body text-sm text-emerald-300">{{ infoMessage }}</p>
-      </div>
-    }
-    @if (errorMessage) {
-      <div class="mb-6 rounded-lg bg-red-500/10 border border-red-500/30 px-4 py-3 flex items-center gap-3 animate-scale-in" role="alert" aria-live="assertive">
-        <svg class="w-4 h-4 text-red-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z"/></svg>
-        <p class="font-body text-sm text-red-300">{{ errorMessage }}</p>
-      </div>
+    <div
+      class="mb-6 rounded-lg bg-emerald-500/10 border border-emerald-500/30 px-4 py-3 flex items-center gap-3 animate-scale-in"
+      role="status"
+      aria-live="polite"
+    >
+      <svg
+        class="w-4 h-4 text-emerald-400 shrink-0"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+        />
+      </svg>
+      <p class="font-body text-sm text-emerald-300">{{ infoMessage }}</p>
+    </div>
+    } @if (errorMessage) {
+    <div
+      class="mb-6 rounded-lg bg-red-500/10 border border-red-500/30 px-4 py-3 flex items-center gap-3 animate-scale-in"
+      role="alert"
+      aria-live="assertive"
+    >
+      <svg
+        class="w-4 h-4 text-red-400 shrink-0"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z"
+        />
+      </svg>
+      <p class="font-body text-sm text-red-300">{{ errorMessage }}</p>
+    </div>
     }
 
     <!-- ══ VOTING VIEW ═══════════════════════════════════════════ -->
     @if (menu === 'Teilnehmer-Ansicht') {
-      <div class="max-w-5xl mx-auto">
-        <header class="mb-8">
-          <h1 class="font-display text-3xl text-mtg-gold mb-1">Abstimmung</h1>
-          <p class="font-body text-sm text-mtg-muted">Wähle bis zu 2 Decks, die zum nächsten Abend mitgebracht werden sollen.</p>
-        </header>
+    <div class="max-w-5xl mx-auto">
+      <header class="mb-8">
+        <h1 class="font-display text-3xl text-mtg-gold mb-1">Abstimmung</h1>
+        <p class="font-body text-sm text-mtg-muted">
+          Wähle bis zu 2 Decks, die zum nächsten Abend mitgebracht werden
+          sollen.
+        </p>
+      </header>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-          <div>
-            <label for="user-name" class="block font-body text-xs font-medium text-mtg-secondary mb-2 uppercase tracking-wider">Dein Name</label>
-            <div class="relative">
-              <span class="absolute left-3 top-1/2 -translate-y-1/2 text-mtg-muted pointer-events-none">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/></svg>
-              </span>
-              <input id="user-name" [(ngModel)]="userName" (ngModelChange)="onUserNameChange()" type="text" autocomplete="given-name" placeholder="Vor- oder Spitzname" class="input pl-9" />
-            </div>
-          </div>
-          <div>
-            <label for="event-select" class="block font-body text-xs font-medium text-mtg-secondary mb-2 uppercase tracking-wider">Event</label>
-            <div class="relative">
-              <span class="absolute left-3 top-1/2 -translate-y-1/2 text-mtg-muted pointer-events-none">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5"/></svg>
-              </span>
-              <select id="event-select" [(ngModel)]="selectedEventId" (ngModelChange)="onEventChange()" class="input pl-9 appearance-none cursor-pointer pr-8">
-                <option [ngValue]="null">Event wählen...</option>
-                @for (ev of events; track ev.id) {
-                  <option [ngValue]="ev.id">{{ ev.title }} — {{ ev.date }}</option>
-                }
-              </select>
-              <span class="absolute right-3 top-1/2 -translate-y-1/2 text-mtg-muted pointer-events-none">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/></svg>
-              </span>
-            </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+        <div>
+          <label
+            for="user-name"
+            class="block font-body text-xs font-medium text-mtg-secondary mb-2 uppercase tracking-wider"
+            >Dein Name</label
+          >
+          <div class="relative">
+            <span
+              class="absolute left-3 top-1/2 -translate-y-1/2 text-mtg-muted pointer-events-none"
+            >
+              <svg
+                class="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"
+                />
+              </svg>
+            </span>
+            <input
+              id="user-name"
+              [(ngModel)]="userName"
+              (ngModelChange)="onUserNameChange()"
+              type="text"
+              autocomplete="given-name"
+              placeholder="Vor- oder Spitzname"
+              class="input pl-9"
+            />
           </div>
         </div>
-
-        @if (events.length === 0) {
-          <div class="card p-12 text-center">
-            <svg class="w-12 h-12 text-mtg-muted/40 mx-auto mb-4" fill="none" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5"/></svg>
-            <p class="font-body text-mtg-muted">Aktuell sind keine Events geplant.</p>
-          </div>
-        }
-
-        @if (selectedEventId && !userName.trim()) {
-          <div class="rounded-lg bg-amber-500/10 border border-amber-500/30 px-4 py-3 mb-6 flex items-center gap-3">
-            <svg class="w-4 h-4 text-amber-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"/></svg>
-            <p class="font-body text-sm text-amber-300">Bitte gib deinen Namen ein, um abstimmen zu können.</p>
-          </div>
-        }
-
-        @if (selectedEventId && userName.trim()) {
-          <div class="flex items-center justify-between mb-5">
-            <div>
-              <h2 class="font-display text-lg text-mtg-text">Welche Decks soll ich mitbringen?</h2>
-              <p class="font-body text-xs text-mtg-muted mt-0.5">Maximal 2 Decks auswählen</p>
-            </div>
-            <div class="flex bg-mtg-bg border border-mtg-border rounded-lg overflow-hidden" role="group">
-              <button (click)="viewMode = 'Raster'" [class]="viewMode === 'Raster' ? 'bg-mtg-primary text-white' : 'text-mtg-muted hover:text-mtg-text'" class="px-3 py-1.5 transition-colors duration-150 cursor-pointer" aria-label="Rasteransicht">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z"/></svg>
-              </button>
-              <button (click)="viewMode = 'Liste'" [class]="viewMode === 'Liste' ? 'bg-mtg-primary text-white' : 'text-mtg-muted hover:text-mtg-text'" class="px-3 py-1.5 transition-colors duration-150 cursor-pointer" aria-label="Listenansicht">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0ZM3.75 12h.007v.008H3.75V12Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm-.375 5.25h.007v.008H3.75v-.008Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"/></svg>
-              </button>
-            </div>
-          </div>
-
-          @if (availableDecks.length === 0) {
-            <div class="card p-10 text-center mb-8"><p class="font-body text-mtg-muted">Alle Decks wurden bereits reserviert.</p></div>
-          }
-
-          @if (viewMode === 'Raster' && availableDecks.length > 0) {
-            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 mb-8">
-              @for (deck of availableDecks; track deck.id) {
-                <div (click)="toggleDeck(deck.id)"
-                  [class]="selectedDeckIds.has(deck.id) ? 'card border-mtg-border-bright shadow-glow-primary ring-1 ring-mtg-primary/60 scale-[1.02] cursor-pointer overflow-hidden group transition-all duration-200' : 'card hover:border-mtg-primary/50 hover:shadow-glow-primary hover:scale-[1.01] cursor-pointer overflow-hidden group transition-all duration-200'"
-                  [attr.aria-pressed]="selectedDeckIds.has(deck.id)" role="button" [attr.aria-label]="deck.name">
-                  <div class="relative overflow-hidden" style="aspect-ratio:5/7">
-                    @if (deck.commander_image) {
-                      <img [src]="deck.commander_image" [alt]="deck.name" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" />
-                    } @else {
-                      <div class="w-full h-full bg-mtg-border/30 flex items-center justify-center">
-                        <svg class="w-8 h-8 text-mtg-muted/40" fill="none" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09Z"/></svg>
-                      </div>
-                    }
-                    @if (selectedDeckIds.has(deck.id)) {
-                      <div class="absolute inset-0 bg-mtg-primary/20 flex items-center justify-center">
-                        <div class="w-9 h-9 rounded-full bg-mtg-primary flex items-center justify-center shadow-glow-primary">
-                          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg>
-                        </div>
-                      </div>
-                    }
-                  </div>
-                  <div class="px-3 py-2.5">
-                    <p class="font-body text-xs font-semibold text-mtg-text truncate">{{ deck.name }}</p>
-                    @if (deck.url) {
-                      <a [href]="deck.url" target="_blank" rel="noopener noreferrer" (click)="$event.stopPropagation()" class="font-body text-[10px] text-mtg-secondary hover:text-mtg-text transition-colors duration-150">Moxfield ↗</a>
-                    }
-                  </div>
-                </div>
+        <div>
+          <label
+            for="event-select"
+            class="block font-body text-xs font-medium text-mtg-secondary mb-2 uppercase tracking-wider"
+            >Event</label
+          >
+          <div class="relative">
+            <span
+              class="absolute left-3 top-1/2 -translate-y-1/2 text-mtg-muted pointer-events-none"
+            >
+              <svg
+                class="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5"
+                />
+              </svg>
+            </span>
+            <select
+              id="event-select"
+              [(ngModel)]="selectedEventId"
+              (ngModelChange)="onEventChange()"
+              class="input pl-9 appearance-none cursor-pointer pr-8"
+            >
+              <option [ngValue]="null">Event wählen...</option>
+              @for (ev of events; track ev.id) {
+              <option [ngValue]="ev.id">{{ ev.title }} — {{ ev.date }}</option>
               }
-            </div>
-          }
+            </select>
+            <span
+              class="absolute right-3 top-1/2 -translate-y-1/2 text-mtg-muted pointer-events-none"
+            >
+              <svg
+                class="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="m19.5 8.25-7.5 7.5-7.5-7.5"
+                />
+              </svg>
+            </span>
+          </div>
+        </div>
+      </div>
 
-          @if (viewMode === 'Liste' && availableDecks.length > 0) {
-            <div class="space-y-2 mb-8">
-              @for (deck of availableDecks; track deck.id) {
-                <div (click)="toggleDeck(deck.id)"
-                  [class]="selectedDeckIds.has(deck.id) ? 'card border-mtg-border-bright shadow-glow-primary bg-mtg-primary/5 flex items-center gap-4 p-3 cursor-pointer transition-all duration-200' : 'card hover:border-mtg-primary/50 flex items-center gap-4 p-3 cursor-pointer transition-all duration-200'"
-                  [attr.aria-pressed]="selectedDeckIds.has(deck.id)" role="button" [attr.aria-label]="deck.name">
-                  @if (deck.commander_image) {
-                    <img [src]="deck.commander_image" [alt]="deck.name" class="w-12 rounded-lg shrink-0 object-cover" style="aspect-ratio:5/7" loading="lazy" />
-                  } @else {
-                    <div class="w-12 shrink-0 bg-mtg-border/30 rounded-lg flex items-center justify-center" style="aspect-ratio:5/7">
-                      <svg class="w-5 h-5 text-mtg-muted/40" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09Z"/></svg>
-                    </div>
-                  }
-                  <div class="flex-1 min-w-0">
-                    <p class="font-body text-sm font-semibold text-mtg-text truncate">{{ deck.name }}</p>
-                    @if (deck.url) {
-                      <a [href]="deck.url" target="_blank" rel="noopener noreferrer" (click)="$event.stopPropagation()" class="font-body text-xs text-mtg-secondary hover:text-mtg-text transition-colors duration-150">Moxfield ↗</a>
-                    }
-                  </div>
-                  <div [class]="selectedDeckIds.has(deck.id) ? 'w-5 h-5 rounded bg-mtg-primary flex items-center justify-center shrink-0 transition-all duration-150' : 'w-5 h-5 rounded border border-mtg-border shrink-0 transition-all duration-150'">
-                    @if (selectedDeckIds.has(deck.id)) {
-                      <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg>
-                    }
-                  </div>
-                </div>
-              }
-            </div>
-          }
+      @if (events.length === 0) {
+      <div class="card p-12 text-center">
+        <svg
+          class="w-12 h-12 text-mtg-muted/40 mx-auto mb-4"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5"
+          />
+        </svg>
+        <p class="font-body text-mtg-muted">
+          Aktuell sind keine Events geplant.
+        </p>
+      </div>
+      } @if (selectedEventId && !userName.trim()) {
+      <div
+        class="rounded-lg bg-amber-500/10 border border-amber-500/30 px-4 py-3 mb-6 flex items-center gap-3"
+      >
+        <svg
+          class="w-4 h-4 text-amber-400 shrink-0"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"
+          />
+        </svg>
+        <p class="font-body text-sm text-amber-300">
+          Bitte gib deinen Namen ein, um abstimmen zu können.
+        </p>
+      </div>
+      } @if (selectedEventId && userName.trim()) {
+      <div class="flex items-center justify-between mb-5">
+        <div>
+          <h2 class="font-display text-lg text-mtg-text">
+            Welche Decks soll ich mitbringen?
+          </h2>
+          <p class="font-body text-xs text-mtg-muted mt-0.5">
+            Maximal 2 Decks auswählen
+          </p>
+        </div>
+        <div
+          class="flex bg-mtg-bg border border-mtg-border rounded-lg overflow-hidden"
+          role="group"
+        >
+          <button
+            (click)="viewMode = 'Raster'"
+            [class]="viewMode === 'Raster' ? 'bg-mtg-primary text-white' : 'text-mtg-muted hover:text-mtg-text'"
+            class="px-3 py-1.5 transition-colors duration-150 cursor-pointer"
+            aria-label="Rasteransicht"
+          >
+            <svg
+              class="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z"
+              />
+            </svg>
+          </button>
+          <button
+            (click)="viewMode = 'Liste'"
+            [class]="viewMode === 'Liste' ? 'bg-mtg-primary text-white' : 'text-mtg-muted hover:text-mtg-text'"
+            class="px-3 py-1.5 transition-colors duration-150 cursor-pointer"
+            aria-label="Listenansicht"
+          >
+            <svg
+              class="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0ZM3.75 12h.007v.008H3.75V12Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm-.375 5.25h.007v.008H3.75v-.008Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"
+              />
+            </svg>
+          </button>
+        </div>
+      </div>
 
-          <div class="flex flex-wrap items-center gap-4">
-            <button (click)="submitVotes()" [disabled]="selectedDeckIds.size === 0 || selectedDeckIds.size > 2" class="btn-accent min-w-[160px] justify-center">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
-              Wünsche abschicken
-            </button>
-            @if (selectedDeckIds.size > 0) {
-              <span class="font-body text-xs text-mtg-muted"><span class="text-mtg-secondary font-semibold">{{ selectedDeckIds.size }}</span>/2 Decks ausgewählt</span>
+      @if (availableDecks.length === 0) {
+      <div class="card p-10 text-center mb-8">
+        <p class="font-body text-mtg-muted">
+          Alle Decks wurden bereits reserviert.
+        </p>
+      </div>
+      } @if (viewMode === 'Raster' && availableDecks.length > 0) {
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 mb-8">
+        @for (deck of availableDecks; track deck.id) {
+        <div
+          (click)="toggleDeck(deck.id)"
+          (keydown.enter)="toggleDeck(deck.id)"
+          (keydown.space)="toggleDeck(deck.id); $event.preventDefault()"
+          [class]="selectedDeckIds.has(deck.id) ? 'card border-mtg-border-bright shadow-glow-primary ring-1 ring-mtg-primary/60 scale-[1.02] cursor-pointer overflow-hidden group transition-all duration-200' : 'card hover:border-mtg-primary/50 hover:shadow-glow-primary hover:scale-[1.01] cursor-pointer overflow-hidden group transition-all duration-200'"
+          [attr.aria-pressed]="selectedDeckIds.has(deck.id)"
+          role="button"
+          tabindex="0"
+          [attr.aria-label]="deck.name"
+        >
+          <div class="relative overflow-hidden" style="aspect-ratio: 5/7">
+            @if (deck.commander_image) {
+            <img
+              [src]="deck.commander_image"
+              [alt]="deck.name"
+              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              loading="lazy"
+            />
+            } @else {
+            <div
+              class="w-full h-full bg-mtg-border/30 flex items-center justify-center"
+            >
+              <svg
+                class="w-8 h-8 text-mtg-muted/40"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09Z"
+                />
+              </svg>
+            </div>
+            } @if (selectedDeckIds.has(deck.id)) {
+            <div
+              class="absolute inset-0 bg-mtg-primary/20 flex items-center justify-center"
+            >
+              <div
+                class="w-9 h-9 rounded-full bg-mtg-primary flex items-center justify-center shadow-glow-primary"
+              >
+                <svg
+                  class="w-5 h-5 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="m4.5 12.75 6 6 9-13.5"
+                  />
+                </svg>
+              </div>
+            </div>
             }
           </div>
+          <div class="px-3 py-2.5">
+            <p class="font-body text-xs font-semibold text-mtg-text truncate">
+              {{ deck.name }}
+            </p>
+            @if (deck.url) {
+            <a
+              [href]="deck.url"
+              target="_blank"
+              rel="noopener noreferrer"
+              (click)="$event.stopPropagation()"
+              class="font-body text-[10px] text-mtg-secondary hover:text-mtg-text transition-colors duration-150"
+              >Moxfield ↗</a
+            >
+            }
+          </div>
+        </div>
         }
       </div>
+      } @if (viewMode === 'Liste' && availableDecks.length > 0) {
+      <div class="space-y-2 mb-8">
+        @for (deck of availableDecks; track deck.id) {
+        <div
+          (click)="toggleDeck(deck.id)"
+          (keydown.enter)="toggleDeck(deck.id)"
+          (keydown.space)="toggleDeck(deck.id); $event.preventDefault()"
+          [class]="selectedDeckIds.has(deck.id) ? 'card border-mtg-border-bright shadow-glow-primary bg-mtg-primary/5 flex items-center gap-4 p-3 cursor-pointer transition-all duration-200' : 'card hover:border-mtg-primary/50 flex items-center gap-4 p-3 cursor-pointer transition-all duration-200'"
+          [attr.aria-pressed]="selectedDeckIds.has(deck.id)"
+          role="button"
+          tabindex="0"
+          [attr.aria-label]="deck.name"
+        >
+          @if (deck.commander_image) {
+          <img
+            [src]="deck.commander_image"
+            [alt]="deck.name"
+            class="w-12 rounded-lg shrink-0 object-cover"
+            style="aspect-ratio: 5/7"
+            loading="lazy"
+          />
+          } @else {
+          <div
+            class="w-12 shrink-0 bg-mtg-border/30 rounded-lg flex items-center justify-center"
+            style="aspect-ratio: 5/7"
+          >
+            <svg
+              class="w-5 h-5 text-mtg-muted/40"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09Z"
+              />
+            </svg>
+          </div>
+          }
+          <div class="flex-1 min-w-0">
+            <p class="font-body text-sm font-semibold text-mtg-text truncate">
+              {{ deck.name }}
+            </p>
+            @if (deck.url) {
+            <a
+              [href]="deck.url"
+              target="_blank"
+              rel="noopener noreferrer"
+              (click)="$event.stopPropagation()"
+              class="font-body text-xs text-mtg-secondary hover:text-mtg-text transition-colors duration-150"
+              >Moxfield ↗</a
+            >
+            }
+          </div>
+          <div
+            [class]="selectedDeckIds.has(deck.id) ? 'w-5 h-5 rounded bg-mtg-primary flex items-center justify-center shrink-0 transition-all duration-150' : 'w-5 h-5 rounded border border-mtg-border shrink-0 transition-all duration-150'"
+          >
+            @if (selectedDeckIds.has(deck.id)) {
+            <svg
+              class="w-3 h-3 text-white"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="3"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="m4.5 12.75 6 6 9-13.5"
+              />
+            </svg>
+            }
+          </div>
+        </div>
+        }
+      </div>
+      }
+
+      <div class="flex flex-wrap items-center gap-4">
+        <button
+          (click)="submitVotes()"
+          [disabled]="selectedDeckIds.size === 0 || selectedDeckIds.size > 2"
+          class="btn-accent min-w-[160px] justify-center"
+        >
+          <svg
+            class="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+            />
+          </svg>
+          Wünsche abschicken
+        </button>
+        @if (selectedDeckIds.size > 0) {
+        <span class="font-body text-xs text-mtg-muted"
+          ><span class="text-mtg-secondary font-semibold"
+            >{{ selectedDeckIds.size }}</span
+          >/2 Decks ausgewählt</span
+        >
+        }
+      </div>
+      }
+    </div>
     }
 
     <!-- ══ ORDER VIEW ════════════════════════════════════════════ -->
     @if (menu === 'Bestellen') {
-      <div class="max-w-3xl mx-auto">
-        <header class="mb-8">
-          <h1 class="font-display text-3xl text-mtg-gold mb-1">Proxies bestellen</h1>
-          <p class="font-body text-sm text-mtg-muted">Importiere ein Moxfield-Deck und erhalte hochwertige Proxy-Karten für <span class="text-mtg-secondary font-semibold">{{ pricePerCard | currency:'EUR':'symbol':'1.2-2':'de' }}</span> pro Karte.</p>
-        </header>
+    <div class="max-w-3xl mx-auto">
+      <header class="mb-8">
+        <h1 class="font-display text-3xl text-mtg-gold mb-1">
+          Proxies bestellen
+        </h1>
+        <p class="font-body text-sm text-mtg-muted">
+          Importiere ein Moxfield-Deck und erhalte hochwertige Proxy-Karten für
+          <span class="text-mtg-secondary font-semibold"
+            >{{ pricePerCard | currency:'EUR':'symbol':'1.2-2':'de' }}</span
+          >
+          pro Karte.
+        </p>
+      </header>
 
-        <!-- Name if not logged in -->
-        @if (!currentUser) {
-          <div class="card p-4 mb-6 flex items-center gap-4">
-            <svg class="w-5 h-5 text-mtg-secondary shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/></svg>
-            <div class="flex-1">
-              <label for="order-user" class="block font-body text-xs font-medium text-mtg-secondary mb-1.5 uppercase tracking-wider">Dein Name <span class="text-mtg-accent">*</span></label>
-              <input id="order-user" [(ngModel)]="userName" type="text" placeholder="Name für die Bestellung" class="input" />
+      <!-- Name if not logged in -->
+      @if (!currentUser) {
+      <div class="card p-4 mb-6 flex items-center gap-4">
+        <svg
+          class="w-5 h-5 text-mtg-secondary shrink-0"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"
+          />
+        </svg>
+        <div class="flex-1">
+          <label
+            for="order-user"
+            class="block font-body text-xs font-medium text-mtg-secondary mb-1.5 uppercase tracking-wider"
+            >Dein Name <span class="text-mtg-accent">*</span></label
+          >
+          <input
+            id="order-user"
+            [(ngModel)]="userName"
+            type="text"
+            placeholder="Name für die Bestellung"
+            class="input"
+          />
+        </div>
+      </div>
+      }
+
+      <!-- Moxfield URL + Preview -->
+      <div class="card p-5 mb-6">
+        <label
+          for="order-mox"
+          class="block font-body text-xs font-medium text-mtg-secondary mb-2 uppercase tracking-wider"
+          >Moxfield Deck URL <span class="text-mtg-accent">*</span></label
+        >
+        <div class="flex gap-3">
+          <input
+            id="order-mox"
+            [(ngModel)]="orderMoxUrl"
+            type="url"
+            placeholder="https://www.moxfield.com/decks/..."
+            class="input flex-1"
+            (keydown.enter)="previewOrder()"
+          />
+          <button
+            (click)="previewOrder()"
+            [disabled]="orderLoading || !orderMoxUrl.includes('moxfield.com')"
+            class="btn-primary shrink-0"
+          >
+            @if (orderLoading) {
+            <svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+              <circle
+                class="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                stroke-width="4"
+              />
+              <path
+                class="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+              />
+            </svg>
+            Laden... } @else {
+            <svg
+              class="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
+              />
+            </svg>
+            Vorschau }
+          </button>
+        </div>
+      </div>
+
+      <!-- Preview result -->
+      @if (orderPreview) {
+      <div class="card overflow-hidden mb-6 animate-scale-in">
+        <div class="flex gap-5 p-5 border-b border-mtg-border">
+          @if (orderPreview.commanderImage) {
+          <img
+            [src]="orderPreview.commanderImage"
+            [alt]="orderPreview.deckName"
+            class="w-20 rounded-lg shrink-0 object-cover shadow-card"
+            style="aspect-ratio: 5/7"
+            loading="lazy"
+          />
+          }
+          <div class="flex-1 min-w-0">
+            <h3 class="font-display text-xl text-mtg-gold mb-1 truncate">
+              {{ orderPreview.deckName }}
+            </h3>
+            <div class="flex flex-wrap gap-3 mt-3">
+              <div class="card px-3 py-2 text-center">
+                <p class="font-body text-xs text-mtg-muted mb-0.5">Karten</p>
+                <p class="font-display text-2xl text-mtg-text">
+                  {{ orderPreview.cardCount }}
+                </p>
+              </div>
+              <div class="card px-3 py-2 text-center">
+                <p class="font-body text-xs text-mtg-muted mb-0.5">
+                  Preis/Karte
+                </p>
+                <p class="font-display text-2xl text-mtg-secondary">
+                  {{ pricePerCard | currency:'EUR':'symbol':'1.2-2':'de' }}
+                </p>
+              </div>
+              <div
+                class="card px-4 py-2 text-center border-mtg-primary/40 shadow-glow-primary"
+              >
+                <p class="font-body text-xs text-mtg-muted mb-0.5">Gesamt</p>
+                <p class="font-display text-2xl text-mtg-gold">
+                  {{ orderTotalPrice | currency:'EUR':'symbol':'1.2-2':'de' }}
+                </p>
+              </div>
             </div>
-          </div>
-        }
-
-        <!-- Moxfield URL + Preview -->
-        <div class="card p-5 mb-6">
-          <label for="order-mox" class="block font-body text-xs font-medium text-mtg-secondary mb-2 uppercase tracking-wider">Moxfield Deck URL <span class="text-mtg-accent">*</span></label>
-          <div class="flex gap-3">
-            <input id="order-mox" [(ngModel)]="orderMoxUrl" type="url" placeholder="https://www.moxfield.com/decks/..." class="input flex-1" (keydown.enter)="previewOrder()" />
-            <button (click)="previewOrder()" [disabled]="orderLoading || !orderMoxUrl.includes('moxfield.com')" class="btn-primary shrink-0">
-              @if (orderLoading) {
-                <svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
-                Laden...
-              } @else {
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"/></svg>
-                Vorschau
-              }
-            </button>
           </div>
         </div>
 
-        <!-- Preview result -->
-        @if (orderPreview) {
-          <div class="card overflow-hidden mb-6 animate-scale-in">
-            <div class="flex gap-5 p-5 border-b border-mtg-border">
-              @if (orderPreview.commanderImage) {
-                <img [src]="orderPreview.commanderImage" [alt]="orderPreview.deckName" class="w-20 rounded-lg shrink-0 object-cover shadow-card" style="aspect-ratio:5/7" loading="lazy" />
-              }
-              <div class="flex-1 min-w-0">
-                <h3 class="font-display text-xl text-mtg-gold mb-1 truncate">{{ orderPreview.deckName }}</h3>
-                <div class="flex flex-wrap gap-3 mt-3">
-                  <div class="card px-3 py-2 text-center">
-                    <p class="font-body text-xs text-mtg-muted mb-0.5">Karten</p>
-                    <p class="font-display text-2xl text-mtg-text">{{ orderPreview.cardCount }}</p>
-                  </div>
-                  <div class="card px-3 py-2 text-center">
-                    <p class="font-body text-xs text-mtg-muted mb-0.5">Preis/Karte</p>
-                    <p class="font-display text-2xl text-mtg-secondary">{{ pricePerCard | currency:'EUR':'symbol':'1.2-2':'de' }}</p>
-                  </div>
-                  <div class="card px-4 py-2 text-center border-mtg-primary/40 shadow-glow-primary">
-                    <p class="font-body text-xs text-mtg-muted mb-0.5">Gesamt</p>
-                    <p class="font-display text-2xl text-mtg-gold">{{ orderTotalPrice | currency:'EUR':'symbol':'1.2-2':'de' }}</p>
-                  </div>
-                </div>
+        <!-- Card list -->
+        @if (orderPreview.cardList.length > 0) {
+        <details class="group">
+          <summary
+            class="flex items-center justify-between px-5 py-3 cursor-pointer hover:bg-mtg-card-hover transition-colors duration-150 list-none"
+          >
+            <span class="font-body text-sm text-mtg-secondary"
+              >{{ orderPreview.cardList.length }} verschiedene Karten
+              anzeigen</span
+            >
+            <svg
+              class="w-4 h-4 text-mtg-muted group-open:rotate-180 transition-transform duration-200"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="m19.5 8.25-7.5 7.5-7.5-7.5"
+              />
+            </svg>
+          </summary>
+          <div class="max-h-64 overflow-y-auto px-5 pb-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1 pt-2">
+              @for (card of orderPreview.cardList; track card.name) {
+              <div
+                class="flex items-center justify-between py-1 border-b border-mtg-border/30"
+              >
+                <span class="font-body text-xs text-mtg-text truncate"
+                  >{{ card.name }}</span
+                >
+                <span class="font-body text-xs text-mtg-muted ml-2 shrink-0"
+                  >×{{ card.quantity }}</span
+                >
               </div>
-            </div>
-
-            <!-- Card list -->
-            @if (orderPreview.cardList.length > 0) {
-              <details class="group">
-                <summary class="flex items-center justify-between px-5 py-3 cursor-pointer hover:bg-mtg-card-hover transition-colors duration-150 list-none">
-                  <span class="font-body text-sm text-mtg-secondary">{{ orderPreview.cardList.length }} verschiedene Karten anzeigen</span>
-                  <svg class="w-4 h-4 text-mtg-muted group-open:rotate-180 transition-transform duration-200" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/></svg>
-                </summary>
-                <div class="max-h-64 overflow-y-auto px-5 pb-4">
-                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1 pt-2">
-                    @for (card of orderPreview.cardList; track card.name) {
-                      <div class="flex items-center justify-between py-1 border-b border-mtg-border/30">
-                        <span class="font-body text-xs text-mtg-text truncate">{{ card.name }}</span>
-                        <span class="font-body text-xs text-mtg-muted ml-2 shrink-0">×{{ card.quantity }}</span>
-                      </div>
-                    }
-                  </div>
-                </div>
-              </details>
-            }
-          </div>
-
-          <!-- Notes + Submit -->
-          <div class="card p-5 mb-6">
-            <label for="order-notes" class="block font-body text-xs font-medium text-mtg-secondary mb-2 uppercase tracking-wider">Anmerkungen (optional)</label>
-            <textarea id="order-notes" [(ngModel)]="orderNotes" rows="3" placeholder="z. B. Foil-Karten, besondere Wünsche, Sleeves..." class="input resize-none"></textarea>
-          </div>
-          <button (click)="submitOrder()" [disabled]="orderSubmitting || !userName.trim() || !orderPreview" class="btn-accent w-full justify-center">
-            @if (orderSubmitting) {
-              <svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
-              Bestellung wird aufgegeben...
-            } @else {
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007Z"/></svg>
-              Jetzt für {{ orderTotalPrice | currency:'EUR':'symbol':'1.2-2':'de' }} bestellen
-            }
-          </button>
-        }
-
-        <!-- My orders -->
-        @if (orders.length > 0) {
-          <div class="mt-10">
-            <h2 class="section-title mb-4">Meine Bestellungen</h2>
-            <div class="space-y-3">
-              @for (order of orders | ordersByUser:userName; track order.id) {
-                <div class="card p-4">
-                  <div class="flex items-start justify-between gap-4">
-                    <div class="flex-1 min-w-0">
-                      <p class="font-body text-sm font-semibold text-mtg-text truncate">{{ order.deck_name }}</p>
-                      <p class="font-body text-xs text-mtg-muted mt-0.5">{{ order.card_count }} Karten · {{ order.total_price | currency:'EUR':'symbol':'1.2-2':'de' }}</p>
-                      @if (order.notes) {
-                        <p class="font-body text-xs text-mtg-muted/70 mt-1 italic">{{ order.notes }}</p>
-                      }
-                    </div>
-                    <div class="flex flex-col items-end gap-1.5 shrink-0">
-                      <span [class]="getStatusBadgeClass(order.status)">{{ order.status }}</span>
-                      <time class="font-body text-[10px] text-mtg-muted">{{ order.created_at | date:'dd.MM.yyyy' }}</time>
-                    </div>
-                  </div>
-                </div>
               }
             </div>
           </div>
+        </details>
         }
       </div>
+
+      <!-- Notes + Submit -->
+      <div class="card p-5 mb-6">
+        <label
+          for="order-notes"
+          class="block font-body text-xs font-medium text-mtg-secondary mb-2 uppercase tracking-wider"
+          >Anmerkungen (optional)</label
+        >
+        <textarea
+          id="order-notes"
+          [(ngModel)]="orderNotes"
+          rows="3"
+          placeholder="z. B. Foil-Karten, besondere Wünsche, Sleeves..."
+          class="input resize-none"
+        ></textarea>
+      </div>
+      <button
+        (click)="submitOrder()"
+        [disabled]="orderSubmitting || !userName.trim() || !orderPreview"
+        class="btn-accent w-full justify-center"
+      >
+        @if (orderSubmitting) {
+        <svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+          <circle
+            class="opacity-25"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            stroke-width="4"
+          />
+          <path
+            class="opacity-75"
+            fill="currentColor"
+            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+          />
+        </svg>
+        Bestellung wird aufgegeben... } @else {
+        <svg
+          class="w-4 h-4"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007Z"
+          />
+        </svg>
+        Jetzt für {{ orderTotalPrice | currency:'EUR':'symbol':'1.2-2':'de' }}
+        bestellen }
+      </button>
+      }
+
+      <!-- My orders -->
+      @if (orders.length > 0) {
+      <div class="mt-10">
+        <h2 class="section-title mb-4">Meine Bestellungen</h2>
+        <div class="space-y-3">
+          @for (order of orders | ordersByUser:userName; track order.id) {
+          <div class="card p-4">
+            <div class="flex items-start justify-between gap-4">
+              <div class="flex-1 min-w-0">
+                <p
+                  class="font-body text-sm font-semibold text-mtg-text truncate"
+                >
+                  {{ order.deck_name }}
+                </p>
+                <p class="font-body text-xs text-mtg-muted mt-0.5">
+                  {{ order.card_count }} Karten · {{ order.total_price |
+                  currency:'EUR':'symbol':'1.2-2':'de' }}
+                </p>
+                @if (order.notes) {
+                <p class="font-body text-xs text-mtg-muted/70 mt-1 italic">
+                  {{ order.notes }}
+                </p>
+                }
+              </div>
+              <div class="flex flex-col items-end gap-1.5 shrink-0">
+                <span [class]="getStatusBadgeClass(order.status)"
+                  >{{ order.status }}</span
+                >
+                <time class="font-body text-[10px] text-mtg-muted"
+                  >{{ order.created_at | date:'dd.MM.yyyy' }}</time
+                >
+              </div>
+            </div>
+          </div>
+          }
+        </div>
+      </div>
+      }
+    </div>
     }
 
     <!-- ══ ADMIN VIEW ════════════════════════════════════════════ -->
     @if (menu === 'Verwalter-Bereich') {
-      <div class="max-w-4xl mx-auto">
-        <header class="mb-8">
-          <h1 class="font-display text-3xl text-mtg-gold mb-1">Admin Dashboard</h1>
-          <p class="font-body text-sm text-mtg-muted">Verwalte Decks, Events, Abstimmungen und Bestellungen.</p>
-        </header>
+    <div class="max-w-4xl mx-auto">
+      <header class="mb-8">
+        <h1 class="font-display text-3xl text-mtg-gold mb-1">
+          Admin Dashboard
+        </h1>
+        <p class="font-body text-sm text-mtg-muted">
+          Verwalte Decks, Events, Abstimmungen und Bestellungen.
+        </p>
+      </header>
 
-        <div class="flex border-b border-mtg-border mb-8 gap-1 flex-wrap" role="tablist">
-          <button (click)="adminTab = 'decks'; onAdminTabChange()" [class]="adminTab === 'decks' ? 'tab-btn-active' : 'tab-btn'" role="tab">Decks</button>
-          <button (click)="adminTab = 'events'; onAdminTabChange()" [class]="adminTab === 'events' ? 'tab-btn-active' : 'tab-btn'" role="tab">Events</button>
-          <button (click)="adminTab = 'results'; onAdminTabChange()" [class]="adminTab === 'results' ? 'tab-btn-active' : 'tab-btn'" role="tab">Auswertung</button>
-          <button (click)="adminTab = 'orders'; onAdminTabChange()" [class]="adminTab === 'orders' ? 'tab-btn-active' : 'tab-btn'" role="tab">
-            Bestellungen
-            @if (orders.length > 0) { <span class="ml-1.5 badge badge-primary">{{ orders.length }}</span> }
+      <div
+        class="flex border-b border-mtg-border mb-8 gap-1 flex-wrap"
+        role="tablist"
+      >
+        <button
+          (click)="adminTab = 'decks'; onAdminTabChange()"
+          [class]="adminTab === 'decks' ? 'tab-btn-active' : 'tab-btn'"
+          role="tab"
+        >
+          Decks
+        </button>
+        <button
+          (click)="adminTab = 'events'; onAdminTabChange()"
+          [class]="adminTab === 'events' ? 'tab-btn-active' : 'tab-btn'"
+          role="tab"
+        >
+          Events
+        </button>
+        <button
+          (click)="adminTab = 'results'; onAdminTabChange()"
+          [class]="adminTab === 'results' ? 'tab-btn-active' : 'tab-btn'"
+          role="tab"
+        >
+          Auswertung
+        </button>
+        <button
+          (click)="adminTab = 'orders'; onAdminTabChange()"
+          [class]="adminTab === 'orders' ? 'tab-btn-active' : 'tab-btn'"
+          role="tab"
+        >
+          Bestellungen @if (orders.length > 0) {
+          <span class="ml-1.5 badge badge-primary">{{ orders.length }}</span> }
+        </button>
+      </div>
+
+      <!-- DECK TAB -->
+      @if (adminTab === 'decks') {
+      <div class="animate-fade-in">
+        <h2 class="section-title mb-5">Neues Deck hinzufügen</h2>
+        <div
+          class="flex bg-mtg-bg border border-mtg-border rounded-lg overflow-hidden w-fit mb-5"
+          role="group"
+        >
+          <button
+            (click)="addMode = 'Moxfield-Import'"
+            [class]="addMode === 'Moxfield-Import' ? 'bg-mtg-primary text-white' : 'text-mtg-muted hover:text-mtg-text'"
+            class="px-4 py-2 font-body text-sm transition-colors duration-150 cursor-pointer"
+          >
+            Moxfield Import
+          </button>
+          <button
+            (click)="addMode = 'Manuell (Scryfall-Suche)'"
+            [class]="addMode === 'Manuell (Scryfall-Suche)' ? 'bg-mtg-primary text-white' : 'text-mtg-muted hover:text-mtg-text'"
+            class="px-4 py-2 font-body text-sm transition-colors duration-150 cursor-pointer"
+          >
+            Manuell
           </button>
         </div>
 
-        <!-- DECK TAB -->
-        @if (adminTab === 'decks') {
-          <div class="animate-fade-in">
-            <h2 class="section-title mb-5">Neues Deck hinzufügen</h2>
-            <div class="flex bg-mtg-bg border border-mtg-border rounded-lg overflow-hidden w-fit mb-5" role="group">
-              <button (click)="addMode = 'Moxfield-Import'" [class]="addMode === 'Moxfield-Import' ? 'bg-mtg-primary text-white' : 'text-mtg-muted hover:text-mtg-text'" class="px-4 py-2 font-body text-sm transition-colors duration-150 cursor-pointer">Moxfield Import</button>
-              <button (click)="addMode = 'Manuell (Scryfall-Suche)'" [class]="addMode === 'Manuell (Scryfall-Suche)' ? 'bg-mtg-primary text-white' : 'text-mtg-muted hover:text-mtg-text'" class="px-4 py-2 font-body text-sm transition-colors duration-150 cursor-pointer">Manuell</button>
+        @if (addMode === 'Moxfield-Import') {
+        <div class="card p-5 mb-8">
+          <label
+            for="mox-url"
+            class="block font-body text-xs font-medium text-mtg-secondary mb-2 uppercase tracking-wider"
+            >Moxfield Link</label
+          >
+          <div class="flex gap-3">
+            <input
+              id="mox-url"
+              [(ngModel)]="moxUrl"
+              type="url"
+              placeholder="https://www.moxfield.com/decks/..."
+              class="input flex-1"
+            />
+            <button
+              (click)="importDeckFromMoxfield()"
+              [disabled]="!moxUrl.includes('moxfield.com')"
+              class="btn-primary shrink-0"
+            >
+              <svg
+                class="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"
+                />
+              </svg>
+              Importieren
+            </button>
+          </div>
+        </div>
+        } @if (addMode === 'Manuell (Scryfall-Suche)') {
+        <div class="card p-5 mb-8 space-y-4">
+          <div>
+            <label
+              for="deck-name"
+              class="block font-body text-xs font-medium text-mtg-secondary mb-2 uppercase tracking-wider"
+              >Deck-Name <span class="text-mtg-accent">*</span></label
+            >
+            <input
+              id="deck-name"
+              [(ngModel)]="manualDeckName"
+              type="text"
+              placeholder="z. B. Zur's Weirding Control"
+              class="input"
+            />
+          </div>
+          <div>
+            <label
+              for="commander-search"
+              class="block font-body text-xs font-medium text-mtg-secondary mb-2 uppercase tracking-wider"
+              >Commander suchen</label
+            >
+            <input
+              id="commander-search"
+              [(ngModel)]="commanderQuery"
+              (ngModelChange)="searchCommanderAutocomplete()"
+              type="text"
+              placeholder="z. B. Atraxa, Praetors' Voice"
+              class="input"
+              autocomplete="off"
+            />
+            @if (commanderSuggestions.length > 0) {
+            <ul class="mt-1 card py-1 max-h-44 overflow-y-auto">
+              @for (s of commanderSuggestions; track s) {
+              <li
+                (click)="selectedCommander = s; updateCommanderSelection(); commanderSuggestions = []"
+                (keydown.enter)="selectedCommander = s; updateCommanderSelection(); commanderSuggestions = []"
+                (keydown.space)="selectedCommander = s; updateCommanderSelection(); commanderSuggestions = []; $event.preventDefault()"
+                role="button"
+                tabindex="0"
+                class="px-4 py-2 font-body text-sm text-mtg-text hover:bg-mtg-primary/10 cursor-pointer transition-colors duration-100"
+              >
+                {{ s }}
+              </li>
+              }
+            </ul>
+            } @if (commanderPreviewImage) {
+            <div class="mt-3 flex items-center gap-3 animate-fade-in">
+              <img
+                [src]="commanderPreviewImage"
+                [alt]="selectedCommander"
+                class="w-14 rounded-lg object-cover shadow-card"
+                style="aspect-ratio: 5/7"
+                loading="lazy"
+              />
+              <p class="font-body text-sm text-mtg-secondary">
+                {{ selectedCommander }}
+              </p>
             </div>
-
-            @if (addMode === 'Moxfield-Import') {
-              <div class="card p-5 mb-8">
-                <label for="mox-url" class="block font-body text-xs font-medium text-mtg-secondary mb-2 uppercase tracking-wider">Moxfield Link</label>
-                <div class="flex gap-3">
-                  <input id="mox-url" [(ngModel)]="moxUrl" type="url" placeholder="https://www.moxfield.com/decks/..." class="input flex-1" />
-                  <button (click)="importDeckFromMoxfield()" [disabled]="!moxUrl.includes('moxfield.com')" class="btn-primary shrink-0">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
-                    Importieren
-                  </button>
-                </div>
-              </div>
-            }
-
-            @if (addMode === 'Manuell (Scryfall-Suche)') {
-              <div class="card p-5 mb-8 space-y-4">
-                <div>
-                  <label for="deck-name" class="block font-body text-xs font-medium text-mtg-secondary mb-2 uppercase tracking-wider">Deck-Name <span class="text-mtg-accent">*</span></label>
-                  <input id="deck-name" [(ngModel)]="manualDeckName" type="text" placeholder="z. B. Zur's Weirding Control" class="input" />
-                </div>
-                <div>
-                  <label for="commander-search" class="block font-body text-xs font-medium text-mtg-secondary mb-2 uppercase tracking-wider">Commander suchen</label>
-                  <input id="commander-search" [(ngModel)]="commanderQuery" (ngModelChange)="searchCommanderAutocomplete()" type="text" placeholder="z. B. Atraxa, Praetors' Voice" class="input" autocomplete="off" />
-                  @if (commanderSuggestions.length > 0) {
-                    <ul class="mt-1 card py-1 max-h-44 overflow-y-auto">
-                      @for (s of commanderSuggestions; track s) {
-                        <li (click)="selectedCommander = s; updateCommanderSelection(); commanderSuggestions = []" class="px-4 py-2 font-body text-sm text-mtg-text hover:bg-mtg-primary/10 cursor-pointer transition-colors duration-100">{{ s }}</li>
-                      }
-                    </ul>
-                  }
-                  @if (commanderPreviewImage) {
-                    <div class="mt-3 flex items-center gap-3 animate-fade-in">
-                      <img [src]="commanderPreviewImage" [alt]="selectedCommander" class="w-14 rounded-lg object-cover shadow-card" style="aspect-ratio:5/7" loading="lazy" />
-                      <p class="font-body text-sm text-mtg-secondary">{{ selectedCommander }}</p>
-                    </div>
-                  }
-                </div>
-                <button (click)="addManualDeck()" [disabled]="!manualDeckName.trim()" class="btn-primary">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
-                  Deck hinzufügen
-                </button>
-              </div>
-            }
-
-            <h2 class="section-title mb-4">Deckliste ({{ decks.length }})</h2>
-            @if (decks.length === 0) {
-              <div class="card p-10 text-center"><p class="font-body text-sm text-mtg-muted">Noch keine Decks vorhanden.</p></div>
-            } @else {
-              <div class="space-y-2">
-                @for (deck of decks; track deck.id) {
-                  <div class="card flex items-center gap-4 p-3 group">
-                    @if (deck.commander_image) {
-                      <img [src]="deck.commander_image" [alt]="deck.name" loading="lazy" class="w-12 rounded-lg shrink-0 object-cover" style="aspect-ratio:5/7" />
-                    } @else {
-                      <div class="w-12 shrink-0 rounded-lg bg-mtg-border/30 flex items-center justify-center" style="aspect-ratio:5/7">
-                        <svg class="w-5 h-5 text-mtg-muted/40" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09Z"/></svg>
-                      </div>
-                    }
-                    <div class="flex-1 min-w-0">
-                      <p class="font-body text-sm font-semibold text-mtg-text truncate">{{ deck.name }}</p>
-                      @if (deck.url) {
-                        <a [href]="deck.url" target="_blank" rel="noopener noreferrer" class="font-body text-xs text-mtg-secondary hover:text-mtg-text transition-colors duration-150">Moxfield ↗</a>
-                      }
-                    </div>
-                    <button (click)="deleteDeck(deck.id)"
-                      class="opacity-0 group-hover:opacity-100 p-2 rounded-lg text-mtg-muted hover:text-mtg-destructive hover:bg-mtg-destructive/10 transition-all duration-200 cursor-pointer focus-visible:opacity-100"
-                      [attr.aria-label]="'Deck ' + deck.name + ' löschen'">
-                      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"/></svg>
-                    </button>
-                  </div>
-                }
-              </div>
             }
           </div>
+          <button
+            (click)="addManualDeck()"
+            [disabled]="!manualDeckName.trim()"
+            class="btn-primary"
+          >
+            <svg
+              class="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M12 4.5v15m7.5-7.5h-15"
+              />
+            </svg>
+            Deck hinzufügen
+          </button>
+        </div>
         }
 
-        <!-- EVENTS TAB -->
-        @if (adminTab === 'events') {
-          <div class="animate-fade-in">
-            <h2 class="section-title mb-5">Neuen Spieleabend anlegen</h2>
-            <div class="card p-5 mb-8">
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                <div>
-                  <label for="event-title" class="block font-body text-xs font-medium text-mtg-secondary mb-2 uppercase tracking-wider">Event Name <span class="text-mtg-accent">*</span></label>
-                  <input id="event-title" [(ngModel)]="eventTitle" type="text" placeholder="Friday Night Magic" class="input" />
-                </div>
-                <div>
-                  <label for="event-date" class="block font-body text-xs font-medium text-mtg-secondary mb-2 uppercase tracking-wider">Datum <span class="text-mtg-accent">*</span></label>
-                  <input id="event-date" [(ngModel)]="eventDate" type="date" class="input" />
-                </div>
-              </div>
-              <button (click)="createEvent()" [disabled]="!eventTitle.trim() || !eventDate" class="btn-primary">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
-                Event anlegen
-              </button>
+        <h2 class="section-title mb-4">Deckliste ({{ decks.length }})</h2>
+        @if (decks.length === 0) {
+        <div class="card p-10 text-center">
+          <p class="font-body text-sm text-mtg-muted">
+            Noch keine Decks vorhanden.
+          </p>
+        </div>
+        } @else {
+        <div class="space-y-2">
+          @for (deck of decks; track deck.id) {
+          <div class="card flex items-center gap-4 p-3 group">
+            @if (deck.commander_image) {
+            <img
+              [src]="deck.commander_image"
+              [alt]="deck.name"
+              loading="lazy"
+              class="w-12 rounded-lg shrink-0 object-cover"
+              style="aspect-ratio: 5/7"
+            />
+            } @else {
+            <div
+              class="w-12 shrink-0 rounded-lg bg-mtg-border/30 flex items-center justify-center"
+              style="aspect-ratio: 5/7"
+            >
+              <svg
+                class="w-5 h-5 text-mtg-muted/40"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09Z"
+                />
+              </svg>
             </div>
-            <h2 class="section-title mb-4">Geplante Events</h2>
-            @if (events.length === 0) {
-              <div class="card p-10 text-center"><p class="font-body text-sm text-mtg-muted">Noch keine Events geplant.</p></div>
-            } @else {
-              <div class="space-y-2">
-                @for (ev of events; track ev.id) {
-                  <div class="card flex items-center gap-4 px-4 py-3">
-                    <div class="w-9 h-9 rounded-lg bg-mtg-primary/15 border border-mtg-primary/30 flex items-center justify-center shrink-0">
-                      <svg class="w-4 h-4 text-mtg-secondary" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5"/></svg>
-                    </div>
-                    <div>
-                      <p class="font-body text-sm font-semibold text-mtg-text">{{ ev.title }}</p>
-                      <time class="font-body text-xs text-mtg-muted" [attr.dateTime]="ev.date">{{ ev.date }}</time>
-                    </div>
-                  </div>
-                }
-              </div>
             }
+            <div class="flex-1 min-w-0">
+              <p class="font-body text-sm font-semibold text-mtg-text truncate">
+                {{ deck.name }}
+              </p>
+              @if (deck.url) {
+              <a
+                [href]="deck.url"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="font-body text-xs text-mtg-secondary hover:text-mtg-text transition-colors duration-150"
+                >Moxfield ↗</a
+              >
+              }
+            </div>
+            <button
+              (click)="deleteDeck(deck.id)"
+              class="opacity-0 group-hover:opacity-100 p-2 rounded-lg text-mtg-muted hover:text-mtg-destructive hover:bg-mtg-destructive/10 transition-all duration-200 cursor-pointer focus-visible:opacity-100"
+              [attr.aria-label]="'Deck ' + deck.name + ' löschen'"
+            >
+              <svg
+                class="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"
+                />
+              </svg>
+            </button>
           </div>
+          }
+        </div>
         }
-
-        <!-- RESULTS TAB -->
-        @if (adminTab === 'results') {
-          <div class="animate-fade-in">
-            <h2 class="section-title mb-5">Packliste — Top Votes</h2>
-            @if (summaryRows.length === 0) {
-              <div class="card p-10 text-center mb-8"><p class="font-body text-sm text-mtg-muted">Noch keine Abstimmungen vorhanden.</p></div>
-            } @else {
-              <div class="card overflow-hidden mb-8">
-                <table class="w-full text-sm">
-                  <thead><tr class="border-b border-mtg-border bg-mtg-bg/50">
-                    <th scope="col" class="text-left px-4 py-3 font-body text-xs font-medium text-mtg-secondary uppercase tracking-wider">Event</th>
-                    <th scope="col" class="text-left px-4 py-3 font-body text-xs font-medium text-mtg-secondary uppercase tracking-wider">Deck</th>
-                    <th scope="col" class="text-right px-4 py-3 font-body text-xs font-medium text-mtg-secondary uppercase tracking-wider">Stimmen</th>
-                  </tr></thead>
-                  <tbody>
-                    @for (row of summaryRows; track $index; let even = $even) {
-                      <tr [class]="even ? 'bg-mtg-bg/20' : ''" class="border-b border-mtg-border/50 hover:bg-mtg-primary/5 transition-colors duration-100">
-                        <td class="px-4 py-3 font-body text-sm text-mtg-text">{{ row.title }}</td>
-                        <td class="px-4 py-3 font-body text-sm text-mtg-text">{{ row.name }}</td>
-                        <td class="px-4 py-3 text-right"><span class="badge badge-primary">{{ row.stimmen }}</span></td>
-                      </tr>
-                    }
-                  </tbody>
-                </table>
-              </div>
-            }
-            <h2 class="section-title mb-4">Teilnehmer Details</h2>
-            @if (detailRows.length === 0) {
-              <div class="card p-10 text-center"><p class="font-body text-sm text-mtg-muted">Keine Details vorhanden.</p></div>
-            } @else {
-              <div class="card overflow-hidden">
-                <table class="w-full text-sm">
-                  <thead><tr class="border-b border-mtg-border bg-mtg-bg/50">
-                    <th scope="col" class="text-left px-4 py-3 font-body text-xs font-medium text-mtg-secondary uppercase tracking-wider">Event</th>
-                    <th scope="col" class="text-left px-4 py-3 font-body text-xs font-medium text-mtg-secondary uppercase tracking-wider">Deck</th>
-                    <th scope="col" class="text-left px-4 py-3 font-body text-xs font-medium text-mtg-secondary uppercase tracking-wider">Teilnehmer</th>
-                  </tr></thead>
-                  <tbody>
-                    @for (row of detailRows; track $index; let even = $even) {
-                      <tr [class]="even ? 'bg-mtg-bg/20' : ''" class="border-b border-mtg-border/50 hover:bg-mtg-primary/5 transition-colors duration-100">
-                        <td class="px-4 py-3 font-body text-sm text-mtg-text">{{ row.event }}</td>
-                        <td class="px-4 py-3 font-body text-sm text-mtg-text">{{ row.deck }}</td>
-                        <td class="px-4 py-3 font-body text-sm text-mtg-muted">{{ row.teilnehmer }}</td>
-                      </tr>
-                    }
-                  </tbody>
-                </table>
-              </div>
-            }
-          </div>
-        }
-
-        <!-- ORDERS TAB -->
-        @if (adminTab === 'orders') {
-          <div class="animate-fade-in">
-            <h2 class="section-title mb-5">Alle Bestellungen</h2>
-            @if (orders.length === 0) {
-              <div class="card p-10 text-center"><p class="font-body text-sm text-mtg-muted">Noch keine Bestellungen vorhanden.</p></div>
-            } @else {
-              <div class="space-y-3">
-                @for (order of orders; track order.id) {
-                  <div class="card p-4">
-                    <div class="flex items-start gap-4">
-                      @if (order.github_avatar) {
-                        <img [src]="order.github_avatar" [alt]="order.user_name" class="w-9 h-9 rounded-full border border-mtg-border shrink-0 mt-0.5" />
-                      } @else {
-                        <div class="w-9 h-9 rounded-full bg-mtg-primary/15 border border-mtg-primary/20 flex items-center justify-center shrink-0 mt-0.5">
-                          <svg class="w-4 h-4 text-mtg-secondary" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/></svg>
-                        </div>
-                      }
-                      <div class="flex-1 min-w-0">
-                        <div class="flex items-start justify-between gap-3 flex-wrap">
-                          <div>
-                            <p class="font-body text-sm font-semibold text-mtg-text">{{ order.deck_name }}</p>
-                            <p class="font-body text-xs text-mtg-muted mt-0.5">von <span class="text-mtg-secondary">{{ order.user_name }}</span>{{ order.github_login ? ' (@' + order.github_login + ')' : '' }}</p>
-                          </div>
-                          <div class="flex flex-col items-end gap-1.5 shrink-0">
-                            <span [class]="getStatusBadgeClass(order.status)">{{ order.status }}</span>
-                            <time class="font-body text-[10px] text-mtg-muted">{{ order.created_at | date:'dd.MM.yyyy HH:mm' }}</time>
-                          </div>
-                        </div>
-                        <div class="flex flex-wrap gap-4 mt-2">
-                          <span class="font-body text-xs text-mtg-muted">{{ order.card_count }} Karten</span>
-                          <span class="font-body text-xs text-mtg-gold font-semibold">{{ order.total_price | currency:'EUR':'symbol':'1.2-2':'de' }}</span>
-                          <a [href]="order.moxfield_url" target="_blank" rel="noopener noreferrer" class="font-body text-xs text-mtg-secondary hover:text-mtg-text transition-colors duration-150">Moxfield ↗</a>
-                        </div>
-                        @if (order.notes) {
-                          <p class="font-body text-xs text-mtg-muted/70 mt-1.5 italic">{{ order.notes }}</p>
-                        }
-                        <!-- Status change -->
-                        <div class="flex flex-wrap gap-2 mt-3">
-                          @for (s of orderStatuses; track s) {
-                            <button (click)="updateOrderStatus(order.id, s)"
-                              [class]="order.status === s ? getStatusBadgeClass(s) + ' opacity-100' : 'badge bg-mtg-bg text-mtg-muted hover:bg-mtg-card-hover'"
-                              class="cursor-pointer transition-all duration-150">{{ s }}</button>
-                          }
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                }
-              </div>
-            }
-          </div>
-        }
-
       </div>
-    }
+      }
 
+      <!-- EVENTS TAB -->
+      @if (adminTab === 'events') {
+      <div class="animate-fade-in">
+        <h2 class="section-title mb-5">Neuen Spieleabend anlegen</h2>
+        <div class="card p-5 mb-8">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+            <div>
+              <label
+                for="event-title"
+                class="block font-body text-xs font-medium text-mtg-secondary mb-2 uppercase tracking-wider"
+                >Event Name <span class="text-mtg-accent">*</span></label
+              >
+              <input
+                id="event-title"
+                [(ngModel)]="eventTitle"
+                type="text"
+                placeholder="Friday Night Magic"
+                class="input"
+              />
+            </div>
+            <div>
+              <label
+                for="event-date"
+                class="block font-body text-xs font-medium text-mtg-secondary mb-2 uppercase tracking-wider"
+                >Datum <span class="text-mtg-accent">*</span></label
+              >
+              <input
+                id="event-date"
+                [(ngModel)]="eventDate"
+                type="date"
+                class="input"
+              />
+            </div>
+          </div>
+          <button
+            (click)="createEvent()"
+            [disabled]="!eventTitle.trim() || !eventDate"
+            class="btn-primary"
+          >
+            <svg
+              class="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M12 4.5v15m7.5-7.5h-15"
+              />
+            </svg>
+            Event anlegen
+          </button>
+        </div>
+        <h2 class="section-title mb-4">Geplante Events</h2>
+        @if (events.length === 0) {
+        <div class="card p-10 text-center">
+          <p class="font-body text-sm text-mtg-muted">
+            Noch keine Events geplant.
+          </p>
+        </div>
+        } @else {
+        <div class="space-y-2">
+          @for (ev of events; track ev.id) {
+          <div class="card flex items-center gap-4 px-4 py-3">
+            <div
+              class="w-9 h-9 rounded-lg bg-mtg-primary/15 border border-mtg-primary/30 flex items-center justify-center shrink-0"
+            >
+              <svg
+                class="w-4 h-4 text-mtg-secondary"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5"
+                />
+              </svg>
+            </div>
+            <div>
+              <p class="font-body text-sm font-semibold text-mtg-text">
+                {{ ev.title }}
+              </p>
+              <time
+                class="font-body text-xs text-mtg-muted"
+                [attr.dateTime]="ev.date"
+                >{{ ev.date }}</time
+              >
+            </div>
+          </div>
+          }
+        </div>
+        }
+      </div>
+      }
+
+      <!-- RESULTS TAB -->
+      @if (adminTab === 'results') {
+      <div class="animate-fade-in">
+        <h2 class="section-title mb-5">Packliste — Top Votes</h2>
+        @if (summaryRows.length === 0) {
+        <div class="card p-10 text-center mb-8">
+          <p class="font-body text-sm text-mtg-muted">
+            Noch keine Abstimmungen vorhanden.
+          </p>
+        </div>
+        } @else {
+        <div class="card overflow-hidden mb-8">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="border-b border-mtg-border bg-mtg-bg/50">
+                <th
+                  scope="col"
+                  class="text-left px-4 py-3 font-body text-xs font-medium text-mtg-secondary uppercase tracking-wider"
+                >
+                  Event
+                </th>
+                <th
+                  scope="col"
+                  class="text-left px-4 py-3 font-body text-xs font-medium text-mtg-secondary uppercase tracking-wider"
+                >
+                  Deck
+                </th>
+                <th
+                  scope="col"
+                  class="text-right px-4 py-3 font-body text-xs font-medium text-mtg-secondary uppercase tracking-wider"
+                >
+                  Stimmen
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (row of summaryRows; track $index; let even = $even) {
+              <tr
+                [class]="even ? 'bg-mtg-bg/20' : ''"
+                class="border-b border-mtg-border/50 hover:bg-mtg-primary/5 transition-colors duration-100"
+              >
+                <td class="px-4 py-3 font-body text-sm text-mtg-text">
+                  {{ row.title }}
+                </td>
+                <td class="px-4 py-3 font-body text-sm text-mtg-text">
+                  {{ row.name }}
+                </td>
+                <td class="px-4 py-3 text-right">
+                  <span class="badge badge-primary">{{ row.stimmen }}</span>
+                </td>
+              </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+        }
+        <h2 class="section-title mb-4">Teilnehmer Details</h2>
+        @if (detailRows.length === 0) {
+        <div class="card p-10 text-center">
+          <p class="font-body text-sm text-mtg-muted">
+            Keine Details vorhanden.
+          </p>
+        </div>
+        } @else {
+        <div class="card overflow-hidden">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="border-b border-mtg-border bg-mtg-bg/50">
+                <th
+                  scope="col"
+                  class="text-left px-4 py-3 font-body text-xs font-medium text-mtg-secondary uppercase tracking-wider"
+                >
+                  Event
+                </th>
+                <th
+                  scope="col"
+                  class="text-left px-4 py-3 font-body text-xs font-medium text-mtg-secondary uppercase tracking-wider"
+                >
+                  Deck
+                </th>
+                <th
+                  scope="col"
+                  class="text-left px-4 py-3 font-body text-xs font-medium text-mtg-secondary uppercase tracking-wider"
+                >
+                  Teilnehmer
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (row of detailRows; track $index; let even = $even) {
+              <tr
+                [class]="even ? 'bg-mtg-bg/20' : ''"
+                class="border-b border-mtg-border/50 hover:bg-mtg-primary/5 transition-colors duration-100"
+              >
+                <td class="px-4 py-3 font-body text-sm text-mtg-text">
+                  {{ row.event }}
+                </td>
+                <td class="px-4 py-3 font-body text-sm text-mtg-text">
+                  {{ row.deck }}
+                </td>
+                <td class="px-4 py-3 font-body text-sm text-mtg-muted">
+                  {{ row.teilnehmer }}
+                </td>
+              </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+        }
+      </div>
+      }
+
+      <!-- ORDERS TAB -->
+      @if (adminTab === 'orders') {
+      <div class="animate-fade-in">
+        <h2 class="section-title mb-5">Alle Bestellungen</h2>
+        @if (orders.length === 0) {
+        <div class="card p-10 text-center">
+          <p class="font-body text-sm text-mtg-muted">
+            Noch keine Bestellungen vorhanden.
+          </p>
+        </div>
+        } @else {
+        <div class="space-y-3">
+          @for (order of orders; track order.id) {
+          <div class="card p-4">
+            <div class="flex items-start gap-4">
+              @if (order.github_avatar) {
+              <img
+                [src]="order.github_avatar"
+                [alt]="order.user_name"
+                class="w-9 h-9 rounded-full border border-mtg-border shrink-0 mt-0.5"
+              />
+              } @else {
+              <div
+                class="w-9 h-9 rounded-full bg-mtg-primary/15 border border-mtg-primary/20 flex items-center justify-center shrink-0 mt-0.5"
+              >
+                <svg
+                  class="w-4 h-4 text-mtg-secondary"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"
+                  />
+                </svg>
+              </div>
+              }
+              <div class="flex-1 min-w-0">
+                <div class="flex items-start justify-between gap-3 flex-wrap">
+                  <div>
+                    <p class="font-body text-sm font-semibold text-mtg-text">
+                      {{ order.deck_name }}
+                    </p>
+                    <p class="font-body text-xs text-mtg-muted mt-0.5">
+                      von
+                      <span class="text-mtg-secondary"
+                        >{{ order.user_name }}</span
+                      >{{ order.github_login ? ' (@' + order.github_login + ')'
+                      : '' }}
+                    </p>
+                  </div>
+                  <div class="flex flex-col items-end gap-1.5 shrink-0">
+                    <span [class]="getStatusBadgeClass(order.status)"
+                      >{{ order.status }}</span
+                    >
+                    <time class="font-body text-[10px] text-mtg-muted"
+                      >{{ order.created_at | date:'dd.MM.yyyy HH:mm' }}</time
+                    >
+                  </div>
+                </div>
+                <div class="flex flex-wrap gap-4 mt-2">
+                  <span class="font-body text-xs text-mtg-muted"
+                    >{{ order.card_count }} Karten</span
+                  >
+                  <span class="font-body text-xs text-mtg-gold font-semibold"
+                    >{{ order.total_price | currency:'EUR':'symbol':'1.2-2':'de'
+                    }}</span
+                  >
+                  <a
+                    [href]="order.moxfield_url"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="font-body text-xs text-mtg-secondary hover:text-mtg-text transition-colors duration-150"
+                    >Moxfield ↗</a
+                  >
+                </div>
+                @if (order.notes) {
+                <p class="font-body text-xs text-mtg-muted/70 mt-1.5 italic">
+                  {{ order.notes }}
+                </p>
+                }
+                <!-- Status change -->
+                <div class="flex flex-wrap gap-2 mt-3">
+                  @for (s of orderStatuses; track s) {
+                  <button
+                    (click)="updateOrderStatus(order.id, s)"
+                    [class]="order.status === s ? getStatusBadgeClass(s) + ' opacity-100' : 'badge bg-mtg-bg text-mtg-muted hover:bg-mtg-card-hover'"
+                    class="cursor-pointer transition-all duration-150"
+                  >
+                    {{ s }}
+                  </button>
+                  }
+                </div>
+              </div>
+            </div>
+          </div>
+          }
+        </div>
+        }
+      </div>
+      }
+    </div>
+    }
   </main>
 </div>
