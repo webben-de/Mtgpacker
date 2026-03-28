@@ -1,29 +1,26 @@
-# Build stage: compile native deps (sqlite3)
-FROM --platform=amd64 node:24-alpine AS builder
+FROM node:24-alpine AS builder
 
 RUN apk add --no-cache python3 make g++
 
 WORKDIR /app
 
 COPY package.json package-lock.json ./
-RUN npm ci --omit=dev
+RUN npm ci
 
-# Rebuild sqlite3 native bindings for this platform
-RUN npm rebuild sqlite3
+COPY . .
+RUN npx nx build api
+RUN npm prune --omit=dev
 
-# Runtime stage
-FROM --platform=amd64 node:24-alpine
+FROM node:24-alpine
 
 WORKDIR /app
 
-# Copy node_modules with compiled native bindings
 COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/dist/api ./dist/api
 
-# Copy built API dist
-COPY dist/api ./dist/api
-
-# SQLite database persisted via volume mount at /app/data
+ENV NODE_ENV=production
 ENV DB_PATH=/app/data/mtg_packer.db
+
 RUN mkdir -p /app/data
 
 EXPOSE 3333
