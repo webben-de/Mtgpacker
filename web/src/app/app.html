@@ -1,6 +1,16 @@
 <div class="flex min-h-dvh bg-mtg-bg">
   <app-sidebar-nav [vm]="vm"></app-sidebar-nav>
 
+  @if (showLoginModal) {
+    <app-login-modal
+      [githubEnabled]="githubEnabled"
+      [googleEnabled]="googleEnabled"
+      [discordEnabled]="discordEnabled"
+      (loginWith)="loginWith($event)"
+      (close)="showLoginModal = false"
+    ></app-login-modal>
+  }
+
   <main class="flex-1 overflow-auto min-w-0 p-6 md:p-8 animate-fade-in">
     <app-global-feedback [vm]="vm"></app-global-feedback>
 

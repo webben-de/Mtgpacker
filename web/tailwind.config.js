@@ -40,11 +40,30 @@ module.exports = {
         'fade-in': { from: { opacity: '0', transform: 'translateY(8px)' }, to: { opacity: '1', transform: 'translateY(0)' } },
         'scale-in': { from: { opacity: '0', transform: 'scale(0.95)' }, to: { opacity: '1', transform: 'scale(1)' } },
         'pulse-glow': { '0%,100%': { boxShadow: '0 0 10px rgba(124,58,237,0.2)' }, '50%': { boxShadow: '0 0 25px rgba(124,58,237,0.5)' } },
+        'modal-in': {
+          from: { opacity: '0', transform: 'scale(0.94) translateY(12px)' },
+          to:   { opacity: '1', transform: 'scale(1)   translateY(0)' },
+        },
+        'backdrop-in': {
+          from: { opacity: '0' },
+          to:   { opacity: '1' },
+        },
+        'row-in': {
+          from: { opacity: '0', transform: 'translateX(-8px)' },
+          to:   { opacity: '1', transform: 'translateX(0)' },
+        },
+        shimmer: {
+          '0%':   { backgroundPosition: '-400px 0' },
+          '100%': { backgroundPosition: '400px 0' },
+        },
       },
       animation: {
-        'fade-in':    'fade-in 0.2s ease-out',
-        'scale-in':   'scale-in 0.15s ease-out',
-        'pulse-glow': 'pulse-glow 2s ease-in-out infinite',
+        'fade-in':     'fade-in 0.2s cubic-bezier(0.16,1,0.3,1)',
+        'scale-in':    'scale-in 0.15s cubic-bezier(0.16,1,0.3,1)',
+        'pulse-glow':  'pulse-glow 2s ease-in-out infinite',
+        'modal-in':    'modal-in 0.28s cubic-bezier(0.16,1,0.3,1) both',
+        'backdrop-in': 'backdrop-in 0.2s ease-out both',
+        'row-in':      'row-in 0.25s cubic-bezier(0.16,1,0.3,1) both',
       },
     },
   },

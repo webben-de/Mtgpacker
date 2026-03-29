@@ -7,6 +7,7 @@ import { GlobalFeedbackComponent } from './components/global-feedback/global-fee
 import { VotingViewComponent } from './components/voting-view/voting-view.component';
 import { OrderViewComponent } from './components/order-view/order-view.component';
 import { AdminViewComponent } from './components/admin-view/admin-view.component';
+import { LoginModalComponent } from './components/login-modal/login-modal.component';
 
 interface Deck {
   id: number;
@@ -53,12 +54,22 @@ interface MoxfieldPreview {
   cardList: Array<{ name: string; quantity: number; set?: string }>;
 }
 
-interface GitHubUser {
-  id: string;
-  login: string;
+interface AppUser {
+  id: number;
   displayName: string;
   avatar: string;
+  role: string;
   isAdmin: boolean;
+  providers?: string[];
+}
+
+interface AdminUser {
+  id: number;
+  display_name: string;
+  avatar: string;
+  role: string;
+  created_at: string;
+  providers: string[];
 }
 
 type MenuView = 'Teilnehmer-Ansicht' | 'Verwalter-Bereich' | 'Bestellen';
@@ -82,6 +93,7 @@ const PRICE_PER_CARD = 0.07;
     VotingViewComponent,
     OrderViewComponent,
     AdminViewComponent,
+    LoginModalComponent,
   ],
   templateUrl: './app.html',
   styleUrl: './app.scss',
@@ -93,12 +105,16 @@ export class App implements OnInit {
   private readonly apiUrl = '/api';
 
   // ── Auth ─────────────────────────────────────────────────────────
-  currentUser: GitHubUser | null = null;
+  currentUser: AppUser | null = null;
   oauthEnabled = false;
+  githubEnabled = false;
+  googleEnabled = false;
+  discordEnabled = false;
+  showLoginModal = false;
 
   // ── Navigation ────────────────────────────────────────────────────
   menu: MenuView = 'Teilnehmer-Ansicht';
-  adminTab: 'decks' | 'events' | 'results' | 'orders' = 'decks';
+  adminTab: 'decks' | 'events' | 'results' | 'orders' | 'users' = 'decks';
   viewMode: 'Raster' | 'Liste' = 'Raster';
   addMode: 'Moxfield-Import' | 'Manuell (Scryfall-Suche)' = 'Moxfield-Import';
 
@@ -108,6 +124,7 @@ export class App implements OnInit {
 
   // ── Data ──────────────────────────────────────────────────────────
   decks: Deck[] = [];
+  users: AdminUser[] = [];
   events: GameEvent[] = [];
   availableDecks: Deck[] = [];
   summaryRows: SummaryRow[] = [];
@@ -159,24 +176,33 @@ export class App implements OnInit {
 
   private loadAuth() {
     this.http
-      .get<GitHubUser | null>(`${this.apiUrl}/auth/me`, {
+      .get<AppUser | null>(`${this.apiUrl}/auth/me`, {
         withCredentials: true,
       })
       .subscribe({
         next: (u) => {
           this.currentUser = u;
-          if (u) this.userName = u.displayName || u.login;
+          if (u) this.userName = u.displayName;
         },
       });
     this.http
-      .get<{ oauthEnabled: boolean }>(`${this.apiUrl}/health`)
+      .get<{ oauthEnabled: boolean; githubEnabled: boolean; googleEnabled: boolean; discordEnabled: boolean }>(`${this.apiUrl}/health`)
       .subscribe({
-        next: (h) => (this.oauthEnabled = h.oauthEnabled),
+        next: (h) => {
+          this.oauthEnabled = h.oauthEnabled;
+          this.githubEnabled = h.githubEnabled ?? false;
+          this.googleEnabled = h.googleEnabled ?? false;
+          this.discordEnabled = h.discordEnabled ?? false;
+        },
       });
   }
 
   login() {
-    window.location.href = `${this.apiUrl}/auth/github`;
+    this.showLoginModal = true;
+  }
+
+  loginWith(provider: 'github' | 'google' | 'discord') {
+    window.location.href = `${this.apiUrl}/auth/${provider}`;
   }
 
   logout() {
@@ -203,6 +229,7 @@ export class App implements OnInit {
   onAdminTabChange() {
     if (this.adminTab === 'orders') this.loadOrders();
     if (this.adminTab === 'results') this.loadResults();
+    if (this.adminTab === 'users') this.loadUsers();
   }
 
   onUserNameChange() {
@@ -258,6 +285,22 @@ export class App implements OnInit {
     this.http
       .get<Order[]>(`${this.apiUrl}/orders`)
       .subscribe({ next: (o) => (this.orders = o) });
+  }
+
+  loadUsers() {
+    this.http.get<AdminUser[]>(`${this.apiUrl}/users`, { withCredentials: true })
+      .subscribe({ next: (u) => (this.users = u) });
+  }
+
+  updateUserRole(id: number, role: string) {
+    this.http.patch(`${this.apiUrl}/users/${id}/role`, { role }, { withCredentials: true })
+      .subscribe({ next: () => this.loadUsers(), error: () => this.showError('Rolle konnte nicht geändert werden.') });
+  }
+
+  deleteUser(id: number) {
+    if (!confirm('Benutzer wirklich löschen?')) return;
+    this.http.delete(`${this.apiUrl}/users/${id}`, { withCredentials: true })
+      .subscribe({ next: () => this.loadUsers(), error: () => this.showError('Benutzer konnte nicht gelöscht werden.') });
   }
 
   // ── Voting ────────────────────────────────────────────────────────
